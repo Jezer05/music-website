@@ -1,0 +1,9 @@
+.idea
+music-website.iml
+
+
+music-server/img
+music-server/song
+music-server/.mvn
+music-server/HELP.md
+music-server/music-server.iml
