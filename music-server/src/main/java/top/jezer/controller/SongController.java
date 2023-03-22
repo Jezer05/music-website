@@ -1,5 +1,6 @@
 package top.jezer.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -21,22 +22,29 @@ public class SongController {
     private SongService songService;
     // 添加新歌曲
     @PostMapping("/add")
-    public Object addSong(Song song, @RequestParam("file") MultipartFile file) {
-        //  禁止用户自定义ID
-        song.setId(null);
-        song.setPic("/img/songPic/tubiao.jpg");
-        // String会自动转成Integer
-        if (null == song.getSingerId() || StringUtils.isBlank(song.getName()))
+    public Object addSong(HttpServletRequest req, @RequestParam("file") MultipartFile file) {
+        String singer_id = req.getParameter("singerId");
+        String name = req.getParameter("name");
+        String introduction = req.getParameter("introduction");
+        String lyric = req.getParameter("lyric");
+        if (StringUtils.isBlank(singer_id) || StringUtils.isBlank(name))
             return new ErrorResp("歌手id和歌曲名称不能为空").getMessage();
         // 创建音乐资源路径
         String fileName = file.getOriginalFilename();
         String filePath = System.getProperty("user.dir") + ResourceLocation.ASSETS_PATH + "/song";
         File file1 = new File(filePath);
-        if (!file1.exists()) {
+        if (!file1.exists())
             file1.mkdir();
-        }
         File dest = new File(filePath + System.getProperty("file.separator") + fileName);
         String storeUrlPath = "/song/" + fileName;
+        // 封装歌曲信息
+        Song song = new Song();
+        song.setSingerId(Integer.parseInt(singer_id.trim()));
+        song.setName(name.trim());
+        song.setIntroduction(introduction);
+        song.setLyric(lyric);
+        // 设置默认歌曲图标
+        song.setPic("/img/songPic/tubiao.jpg");
         song.setUrl(storeUrlPath);
         // TODO 查看是否存在同名歌曲
         try {
@@ -96,6 +104,8 @@ public class SongController {
     // 根据歌手查询歌曲
     @GetMapping("/singerName/detail")
     public Object getSongByName(String name){
+        if (null == name)
+            return new ErrorResp("歌曲名称不能为空").getMessage();
         try{
             return new SuccessResp<>("歌曲查询成功", songService.getSongByName(name)).getMessage();
         }catch (Exception e){
@@ -104,9 +114,24 @@ public class SongController {
     }
     // 更新歌曲信息
     @PutMapping("/update")
-    public Object updateSongMsg(Song song) {
-        if (null == song.getId())
+    public Object updateSongMsg(HttpServletRequest req) {
+        String id = req.getParameter("id");
+        String singer_id = req.getParameter("singerId");
+        String name = req.getParameter("name");
+        String introduction = req.getParameter("introduction");
+        String lyric = req.getParameter("lyric");
+        if (StringUtils.isBlank(id))
             return new ErrorResp("歌曲id不能为空").getMessage();
+        // 封装歌曲信息
+        Song song = new Song();
+        song.setId(Integer.parseInt(id));
+        // 处理空串的情况，此时不能调用paresInt
+        if (StringUtils.isBlank(singer_id))
+            song.setSingerId(null);
+        else song.setSingerId(Integer.parseInt(singer_id));
+        song.setName(name);
+        song.setIntroduction(introduction);
+        song.setLyric(lyric);
         try {
             boolean res = songService.updateSong(song);
             if (res) {

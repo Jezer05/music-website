@@ -17,16 +17,13 @@ public class SongServiceImpl implements SongService {
     @Override
     public boolean addSong(Song song) {
         // 去除首尾空格，trim不适用于null
-        String name = song.getName();
+        // 不进行Pic和URL的修改
         String introduction = song.getIntroduction();
         String lyric = song.getLyric();
-        if (null != name)
-            name = name.trim();
         if (null != introduction)
             introduction = introduction.trim();
         if (null != lyric)
             lyric = lyric.trim();
-        song.setName(name);
         song.setIntroduction(introduction);
         song.setLyric(lyric);
         return songMapper.insert(song) > 0;
@@ -35,27 +32,21 @@ public class SongServiceImpl implements SongService {
     @Override
     public boolean updateSong(Song song) {
         // 去除首尾空格，trim不适用于null
+        // 不进行Pic和URL的修改
         String name = song.getName();
         String introduction = song.getIntroduction();
         String lyric = song.getLyric();
-        String pic = song.getPic();
-        String url = song.getUrl();
-        if (null != name)
-            name = name.trim();
+        // name为空串时，默认不修改名称
+        if (name.isBlank())
+            name = null;
+        else name = name.trim();
         if (null != introduction)
             introduction = introduction.trim();
         if (null != lyric)
             lyric = lyric.trim();
-        // 如果pic或者url为空字符串，则统一设为null，不进行数据更新
-        if (StringUtils.isBlank(pic))
-            pic = null;
-        if (StringUtils.isBlank(url))
-            url = null;
         song.setName(name);
         song.setIntroduction(introduction);
         song.setLyric(lyric);
-        song.setPic(pic);
-        song.setUrl(url);
         return songMapper.updateById(song) > 0;
     }
 
@@ -83,12 +74,10 @@ public class SongServiceImpl implements SongService {
 
     @Override
     public List<Song> getSongByName(String name) {
-        if (null != name)
-            name = name.trim();
+        name = name.trim();
         // 在url携带参数会删除多余空格，但是body中不会，空白字符默认查询所有
         if (StringUtils.isBlank(name))
             name = "";
-        System.out.println(StringUtils.isBlank(name));
         LambdaQueryWrapper<Song> wrapper = new LambdaQueryWrapper<>();
         wrapper.like(Song::getName, name);
         return songMapper.selectList(wrapper);
