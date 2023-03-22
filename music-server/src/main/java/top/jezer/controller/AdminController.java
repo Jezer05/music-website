@@ -3,8 +3,10 @@ package top.jezer.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import top.jezer.common.ErrorResp;
 import top.jezer.common.SuccessResp;
@@ -12,6 +14,7 @@ import top.jezer.exception.SystemException;
 import top.jezer.service.serviceImpl.AdminServiceImpl;
 
 @RestController
+@RequestMapping("/admins")
 public class AdminController {
     @Autowired
     private AdminServiceImpl adminService;
@@ -19,15 +22,17 @@ public class AdminController {
     /**
      *  登录验证
      */
-    @PostMapping("/admin/login/status")
+    @PostMapping("/login/status")
     public Object loginStatus(HttpServletRequest req, HttpSession session) {
         String name = req.getParameter("name");
         String password = req.getParameter("password");
+        if (StringUtils.isBlank(name) || StringUtils.isBlank(password))
+            return new ErrorResp("密码和用户名不能为空");
         try{
             boolean res = adminService.veritypwd(name, password);
             if (res) {
                 session.setAttribute("name", name);
-                return new SuccessResp<ObjectUtils.Null>("登录成功").getMessage();
+                return new SuccessResp<>("登录成功").getMessage();
             } else {
                 return new ErrorResp("用户名或密码错误").getMessage();
             }
@@ -35,6 +40,4 @@ public class AdminController {
             throw new SystemException("系统繁忙，请稍后再试");
         }
     }
-
-
 }

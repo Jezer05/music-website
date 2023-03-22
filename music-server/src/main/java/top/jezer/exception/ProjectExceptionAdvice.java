@@ -14,11 +14,13 @@ public class ProjectExceptionAdvice {
         //记录日志
         //发送消息给运维
         //发送邮件给开发人员,ex对象发送给开发人员
+        System.out.println("系统异常："+ ex.getMessage());
         return new FatalResp(ex.getMsg());
     }
 
     @ExceptionHandler(BusinessException.class)
     public ErrorResp doBusinessException(BusinessException ex){
+        System.out.println("业务异常："+ ex.getMessage());
         return new ErrorResp(ex.getMsg());
     }
 
@@ -28,6 +30,7 @@ public class ProjectExceptionAdvice {
         //记录日志
         //发送消息给运维
         //发送邮件给开发人员,ex对象发送给开发人员
+        System.out.println(ex.getMessage());
         return new ErrorResp("未知错误，程序猿正在努力解决");
     }
 }
