@@ -20,16 +20,12 @@ public class SongServiceImpl implements SongService {
 
     @Override
     public boolean updateSong(Song song) {
-        LambdaQueryWrapper<Song> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Song::getId, song.getId());
-        return songMapper.update(song,wrapper) > 0;
+        return songMapper.updateById(song) > 0;
     }
 
     @Override
     public boolean deleteSong(Integer id) {
-        LambdaQueryWrapper<Song> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Song::getId, id);
-        return songMapper.delete(wrapper) > 0;
+        return songMapper.deleteById(id) > 0;
     }
 
     @Override

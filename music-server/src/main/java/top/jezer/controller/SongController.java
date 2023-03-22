@@ -73,7 +73,7 @@ public class SongController {
     }
     // 删除歌曲
     @DeleteMapping("/delete/{id}")
-    public Object deleteSong(@PathVariable("id") int id){
+    public Object deleteSong(@PathVariable("id") Integer id){
         try{
             boolean res = songService.deleteSong(id);
             if (res) {
@@ -95,8 +95,8 @@ public class SongController {
         }
     }
     // 返回指定歌曲ID的歌曲
-    @GetMapping("/detail/{id}")
-    public Object getSongById(@PathVariable("id") int id){
+    @GetMapping("/{id}")
+    public Object getSongById(@PathVariable("id") Integer id){
         try{
             return new SuccessResp<>("查询成功", songService.getSongById(id)).getMessage();
         }catch (Exception e){
@@ -105,7 +105,7 @@ public class SongController {
     }
     // 根据歌手Id查询歌曲
     @GetMapping("/singer/detail/{id}")
-    public Object getSongBySingerId(@PathVariable("id") int singerId){
+    public Object getSongBySingerId(@PathVariable("id") Integer singerId){
         try{
             return new SuccessResp<>("查询成功",songService.getSongBySingerId(singerId)).getMessage();
         }catch (Exception e){
@@ -116,6 +116,8 @@ public class SongController {
     @GetMapping("/singerName/detail")
     public Object getSongByName(HttpServletRequest req){
         String name = req.getParameter("name");
+        if (StringUtils.isNotBlank(name))
+            name = name.trim();
         try{
             return new SuccessResp<>("查询成功", songService.getSongByName(name)).getMessage();
         }catch (Exception e){
@@ -156,7 +158,7 @@ public class SongController {
     }
     // 更新歌曲图片
     @PutMapping("/updateImg/{id}")
-    public Object updateSongPic(@RequestParam("file") MultipartFile urlFile, @PathVariable("id") int id) {
+    public Object updateSongPic(@RequestParam("file") MultipartFile urlFile, @PathVariable("id") Integer id) {
         // TODO 删除旧图片
         String fileName = System.currentTimeMillis() + urlFile.getOriginalFilename();
         String filePath = System.getProperty("user.dir") + ResourceLocation.ASSETS_PATH + "/img/songPic";
@@ -184,7 +186,7 @@ public class SongController {
 
     // 更新歌曲资源
     @PutMapping("/updateUrl/{id}")
-    public Object updateSongUrl(@RequestParam("file") MultipartFile urlFile, @PathVariable("id") int id) {
+    public Object updateSongUrl(@RequestParam("file") MultipartFile urlFile, @PathVariable("id") Integer id) {
         // TODO 删除旧资源
         String fileName = urlFile.getOriginalFilename();
         String filePath = System.getProperty("user.dir") + ResourceLocation.ASSETS_PATH + "/song";
