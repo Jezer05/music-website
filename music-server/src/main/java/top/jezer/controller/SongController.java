@@ -27,8 +27,20 @@ public class SongController {
         String name = req.getParameter("name");
         String introduction = req.getParameter("introduction");
         String lyric = req.getParameter("lyric");
-        if (StringUtils.isBlank(singer_id) || StringUtils.isBlank(name))
-            return new ErrorResp("歌手id和歌曲名称不能为空").getMessage();
+        if (StringUtils.isBlank(singer_id))
+            return new ErrorResp("歌手id不能为空").getMessage();
+        if (StringUtils.isBlank(name))
+            return new ErrorResp("歌曲名称不能为空").getMessage();
+        else {
+            // 根据歌曲名称判断是否资源重复
+            name = name.trim();
+            try {
+                if (songService.getSongByNameEq(name) != null)
+                    return new ErrorResp("已存在同名歌曲").getMessage();
+            }catch (Exception e){
+                throw new SystemException();
+            }
+        }
         // 创建音乐资源路径
         String fileName = file.getOriginalFilename();
         String filePath = System.getProperty("user.dir") + ResourceLocation.ASSETS_PATH + "/song";
@@ -46,7 +58,6 @@ public class SongController {
         // 设置默认歌曲图标
         song.setPic("/img/songPic/tubiao.jpg");
         song.setUrl(storeUrlPath);
-        // TODO 查看是否存在同名歌曲
         try {
             file.transferTo(dest);
             boolean res = songService.addSong(song);
@@ -62,6 +73,8 @@ public class SongController {
     // 删除歌曲
     @DeleteMapping("/delete/{id}")
     public Object deleteSong(@PathVariable("id") Integer id){
+        if (null == songService.getSongById(id))
+            return new ErrorResp("查询不到对应歌曲资源").getMessage();
         try{
             boolean res = songService.deleteSong(id);
             if (res) {
@@ -125,6 +138,8 @@ public class SongController {
         // 封装歌曲信息
         Song song = new Song();
         song.setId(Integer.parseInt(id));
+        if (null == songService.getSongById(song.getId()))
+            return new ErrorResp("查询不到对应歌曲资源").getMessage();
         // 处理空串的情况，此时不能调用paresInt
         if (StringUtils.isBlank(singer_id))
             song.setSingerId(null);
@@ -144,8 +159,10 @@ public class SongController {
         }
     }
     // 更新歌曲图片
-    @PutMapping("/updateImg/{id}")
+    @PutMapping("/update/img/{id}")
     public Object updateSongPic(@RequestParam("file") MultipartFile file, @PathVariable("id") Integer id) {
+        if (null == songService.getSongById(id))
+            return new ErrorResp("查询不到对应歌曲资源").getMessage();
         // TODO 删除旧图片
         String fileName = System.currentTimeMillis() + file.getOriginalFilename();
         String filePath = System.getProperty("user.dir") + ResourceLocation.ASSETS_PATH + "/img/songPic";
@@ -161,6 +178,7 @@ public class SongController {
             song.setId(id);
             song.setPic(storeUrlPath);
             boolean res = songService.updateSong(song);
+            // TODO 图片上传成功但是数据库失败，删除不必要资源
             if (res) {
                 return new SuccessResp<>("歌曲图片上传成功", storeUrlPath).getMessage();
             } else {
@@ -172,8 +190,10 @@ public class SongController {
     }
 
     // 更新歌曲资源
-    @PutMapping("/updateUrl/{id}")
+    @PutMapping("/update/url/{id}")
     public Object updateSongUrl(@RequestParam("file") MultipartFile file, @PathVariable("id") Integer id) {
+        if (null == songService.getSongById(id))
+            return new ErrorResp("查询不到对应歌曲资源").getMessage();
         // TODO 删除旧资源
         String fileName = file.getOriginalFilename();
         String filePath = System.getProperty("user.dir") + ResourceLocation.ASSETS_PATH + "/song";
@@ -188,6 +208,7 @@ public class SongController {
             Song song = new Song();
             song.setId(id);
             song.setUrl(storeUrlPath);
+            // TODO 图片上传成功但是数据库失败，删除不必要资源
             boolean res = songService.updateSong(song);
             if (res) {
                 return new SuccessResp<>("上传成功", storeUrlPath).getMessage();

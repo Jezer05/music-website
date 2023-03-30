@@ -37,7 +37,7 @@ public class SongServiceImpl implements SongService {
         String introduction = song.getIntroduction();
         String lyric = song.getLyric();
         // name为空串时，默认不修改名称
-        if (name.isBlank())
+        if (StringUtils.isBlank(name))
             name = null;
         else name = name.trim();
         if (null != introduction)
