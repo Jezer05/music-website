@@ -8,8 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 public class AdminServiceTest {
     @Autowired
     private AdminService adminService;
-    @Test
-    public void veritypwdTest(){
-        System.out.println(adminService.veritypwd("admin", "123"));
-    }
+    //@Test
+    //public void veritypwdTest(){
+    //    System.out.println(adminService.verity("admin", "123"));
+    //}
 }

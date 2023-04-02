@@ -8,6 +8,11 @@ import {join} from "path";
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  resolve: {
+    alias: {
+      '@': join(__dirname, "src"),
+    }
+  },
   plugins: [
     // unplugin-auto-import来实现vue函数的自动导入
     AutoImport({
@@ -35,11 +40,6 @@ export default defineConfig({
     }),
     vue(),
   ],
-  resolve: {
-    alias: {
-      '@': join(__dirname, "src"),
-    }
-  },
   server: {
     proxy: {
       '/api': {

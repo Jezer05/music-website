@@ -1,18 +1,20 @@
 package top.jezer.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
+import org.springframework.web.servlet.config.annotation.*;
 import top.jezer.constant.ResourceLocation;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
 public class WebMvcSupport extends WebMvcConfigurationSupport {
+    @Autowired
+    private TokenInterceptor tokenInterceptor;
     /**
      * 处理乱码
      */
@@ -54,5 +56,17 @@ public class WebMvcSupport extends WebMvcConfigurationSupport {
                 .addResourceLocations(ResourceLocation.SONG_PATH);
         registry.addResourceHandler("/img/singerPic/**")
                 .addResourceLocations(ResourceLocation.SINGER_PIC_PATH);
+    }
+    /**
+     * token 拦截器
+     */
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        List<String> excludePath = new ArrayList<>();
+        //排除拦截，除了注册登录(此时还没token)，其他都拦截
+        excludePath.add("/admins/login");  //登录
+        registry.addInterceptor(tokenInterceptor)
+                .addPathPatterns("/**")
+                .excludePathPatterns(excludePath);
     }
 }

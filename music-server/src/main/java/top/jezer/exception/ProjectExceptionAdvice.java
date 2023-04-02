@@ -15,13 +15,13 @@ public class ProjectExceptionAdvice {
         //发送消息给运维
         //发送邮件给开发人员,ex对象发送给开发人员
         System.out.println("系统异常："+ ex.getMessage());
-        return new FatalResp(ex.getMsg()).getMessage();
+        return new FatalResp(ex.getMsg());
     }
 
     @ExceptionHandler(BusinessException.class)
     public Object doBusinessException(BusinessException ex){
         System.out.println("业务异常："+ ex.getMessage());
-        return new ErrorResp(ex.getMsg()).getMessage();
+        return new ErrorResp(ex.getMsg());
     }
 
     //除了自定义的异常处理器，保留对Exception类型的异常处理，用于处理非预期的异常
@@ -31,6 +31,6 @@ public class ProjectExceptionAdvice {
         //发送消息给运维
         //发送邮件给开发人员,ex对象发送给开发人员
         System.out.println(ex.getMessage());
-        return new ErrorResp("未知错误，程序猿正在努力解决").getMessage();
+        return new ErrorResp("未知错误，程序猿正在努力解决");
     }
 }

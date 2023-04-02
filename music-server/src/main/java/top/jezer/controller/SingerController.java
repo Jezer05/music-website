@@ -37,13 +37,13 @@ public class SingerController {
             name = name.trim();
             try {
                 if (singerService.getSingerByNameEq(name) != null)
-                    return new ErrorResp("已存在同名歌手").getMessage();
+                    return new ErrorResp("已存在同名歌手");
             } catch (Exception e){
                 throw new SystemException();
             }
-        } else return new ErrorResp("歌手姓名不能为空").getMessage();
+        } else return new ErrorResp("歌手姓名不能为空");
         if (!(null == sex || sex.trim().equals("0") || sex.trim().equals("1")))
-            return new ErrorResp("性别数据输入不合法").getMessage();
+            return new ErrorResp("性别数据输入不合法");
         Singer singer = new Singer();
         singer.setName(name);
         if (sex == null)
@@ -65,9 +65,9 @@ public class SingerController {
         try {
             boolean res = singerService.addSinger(singer);
             if (res) {
-                return new SuccessResp<>("歌手添加成功").getMessage();
+                return new SuccessResp("歌手添加成功");
             } else {
-                return new ErrorResp("歌手添加失败").getMessage();
+                return new ErrorResp("歌手添加失败");
             }
         } catch (Exception e){
             throw  new SystemException();
@@ -81,7 +81,7 @@ public class SingerController {
         try {
             boolean res = singerService.deleteSinger(id);
             if (res)
-                return new SuccessResp<>("歌手删除成功").getMessage();
+                return new SuccessResp("歌手删除成功").getMessage();
             else return new ErrorResp("歌手删除失败").getMessage();
         }catch (Exception e){
             throw new SystemException();
@@ -91,7 +91,7 @@ public class SingerController {
     @GetMapping
     public Object getAllSinger(){
         try {
-            return new SuccessResp<>("歌手查询成功", singerService.getAllSinger()).getMessage();
+            return new SuccessResp("歌手查询成功", singerService.getAllSinger()).getMessage();
         }catch (Exception e){
             throw  new SystemException();
         }
@@ -100,7 +100,7 @@ public class SingerController {
     @GetMapping("/{id}")
     public Object getSingerById(@PathVariable Integer id){
         try {
-            return new SuccessResp<>("查询成功", singerService.getSingerById(id)).getMessage();
+            return new SuccessResp("查询成功", singerService.getSingerById(id)).getMessage();
         }catch (Exception e){
             throw new SystemException();
         }
@@ -112,7 +112,7 @@ public class SingerController {
         if (null == name)
             return new ErrorResp("歌手名称不能为空").getMessage();
         try {
-            return new SuccessResp<>("查询成功", singerService.getSingerByName(name)).getMessage();
+            return new SuccessResp("查询成功", singerService.getSingerByName(name)).getMessage();
         }catch (Exception e){
             throw new SystemException();
         }
@@ -123,7 +123,7 @@ public class SingerController {
         if (sex != 0 && sex != 1)
             return new ErrorResp("性别数据输入不合法").getMessage();
         try {
-            return new SuccessResp<>("歌手查询成功", singerService.getSingerBySex(sex)).getMessage();
+            return new SuccessResp("歌手查询成功", singerService.getSingerBySex(sex)).getMessage();
         }catch (Exception e){
             throw new SystemException();
         }
@@ -164,7 +164,7 @@ public class SingerController {
         try {
             boolean res = singerService.updateSinger(singer);
             if (res) {
-                return new SuccessResp<>("歌手信息更新成功").getMessage();
+                return new SuccessResp("歌手信息更新成功").getMessage();
             } else {
                 return new ErrorResp("歌手信息更新失败").getMessage();
             }
@@ -192,7 +192,7 @@ public class SingerController {
             singer.setPic(imgPath);
             boolean res = singerService.updateSinger(singer);
             if (res) {
-                return new SuccessResp<>("上传成功", imgPath).getMessage();
+                return new SuccessResp("上传成功", imgPath).getMessage();
             } else {
                 return new ErrorResp("上传失败").getMessage();
             }

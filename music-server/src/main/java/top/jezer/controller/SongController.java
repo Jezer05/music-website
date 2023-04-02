@@ -62,7 +62,7 @@ public class SongController {
             file.transferTo(dest);
             boolean res = songService.addSong(song);
             if (res) {
-                return new SuccessResp<>("歌曲添加成功").getMessage();
+                return new SuccessResp("歌曲添加成功").getMessage();
             } else {
                 return new ErrorResp("歌曲添加失败").getMessage();
             }
@@ -78,7 +78,7 @@ public class SongController {
         try{
             boolean res = songService.deleteSong(id);
             if (res) {
-                return new SuccessResp<>("歌曲删除成功").getMessage();
+                return new SuccessResp("歌曲删除成功").getMessage();
             } else {
                 return new ErrorResp("歌曲删除失败").getMessage();
             }
@@ -90,7 +90,7 @@ public class SongController {
     @GetMapping
     public Object getAllSong(){
         try{
-            return new SuccessResp<>("歌曲查询成功", songService.getAllSong()).getMessage();
+            return new SuccessResp("歌曲查询成功", songService.getAllSong()).getMessage();
         }catch (Exception e){
             throw new SystemException("系统繁忙，请稍后再试");
         }
@@ -100,7 +100,7 @@ public class SongController {
     public Object getSongById(@PathVariable("id") Integer id){
         try{
             // 没有数据也是查询成功，只是data为null
-            return new SuccessResp<>("歌曲查询成功", songService.getSongById(id)).getMessage();
+            return new SuccessResp("歌曲查询成功", songService.getSongById(id)).getMessage();
         }catch (Exception e){
             throw new SystemException("系统繁忙，请稍后再试");
         }
@@ -109,7 +109,7 @@ public class SongController {
     @GetMapping("/singer/detail/{id}")
     public Object getSongBySingerId(@PathVariable("id") Integer singerId){
         try{
-            return new SuccessResp<>("歌曲查询成功",songService.getSongBySingerId(singerId)).getMessage();
+            return new SuccessResp("歌曲查询成功",songService.getSongBySingerId(singerId)).getMessage();
         }catch (Exception e){
             throw new SystemException("系统繁忙，请稍后再试");
         }
@@ -120,7 +120,7 @@ public class SongController {
         if (null == name)
             return new ErrorResp("歌曲名称不能为空").getMessage();
         try{
-            return new SuccessResp<>("歌曲查询成功", songService.getSongByName(name)).getMessage();
+            return new SuccessResp("歌曲查询成功", songService.getSongByName(name)).getMessage();
         }catch (Exception e){
             throw new SystemException("系统繁忙，请稍后再试");
         }
@@ -150,7 +150,7 @@ public class SongController {
         try {
             boolean res = songService.updateSong(song);
             if (res) {
-                return new SuccessResp<>("歌曲信息修改成功").getMessage();
+                return new SuccessResp("歌曲信息修改成功").getMessage();
             } else {
                 return new ErrorResp("歌曲信息修改失败").getMessage();
             }
@@ -180,7 +180,7 @@ public class SongController {
             boolean res = songService.updateSong(song);
             // TODO 图片上传成功但是数据库失败，删除不必要资源
             if (res) {
-                return new SuccessResp<>("歌曲图片上传成功", storeUrlPath).getMessage();
+                return new SuccessResp("歌曲图片上传成功", storeUrlPath).getMessage();
             } else {
                 return new ErrorResp("歌曲图片上传失败").getMessage();
             }
@@ -211,7 +211,7 @@ public class SongController {
             // TODO 图片上传成功但是数据库失败，删除不必要资源
             boolean res = songService.updateSong(song);
             if (res) {
-                return new SuccessResp<>("上传成功", storeUrlPath).getMessage();
+                return new SuccessResp("上传成功", storeUrlPath).getMessage();
             } else {
                 return new ErrorResp("上传失败").getMessage();
             }

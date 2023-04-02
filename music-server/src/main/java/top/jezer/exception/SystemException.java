@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 public class SystemException extends RuntimeException{
     private String msg;
     public SystemException(){
-        this.msg = "系统繁忙，请稍后再试";
+        this.msg = "系统异常，请稍后再试";
     }
 }
