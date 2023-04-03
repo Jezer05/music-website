@@ -23,6 +23,7 @@ public class AdminServiceImpl implements AdminService {
         Admin admin = adminMapper.selectOne(wrapper);
         // 未查到用户返回null
         if (null == admin) return null;
+        adminDTO.setId(admin.getId());
         adminDTO.setToken(TokenUtils.sign(admin));
         return adminDTO;
     }

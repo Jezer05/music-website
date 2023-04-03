@@ -20,7 +20,7 @@ public class TokenInterceptor implements HandlerInterceptor {
             return true;
         }
         response.setCharacterEncoding("utf-8");
-        String token = request.getHeader("token");
+        String token = request.getHeader("x-access-token");
         if (token!=null){
             boolean result= TokenUtils.verify(token);
             if (result){
@@ -31,10 +31,11 @@ public class TokenInterceptor implements HandlerInterceptor {
         response.setContentType("application/json; charset=utf-8");
         try {
             JSONObject json=new JSONObject();
-            json.put("msg","token verify fail");
-            json.put("code","500");
+            json.put("message", "登录状态失效，请重新登录");
+            json.put("code", 6000);
+            json.put("isSuccess", false);
+            json.put("type", "error");
             response.getWriter().append(json.toString());
-            System.out.println("认证失败，未通过拦截器");
         } catch (Exception e) {
             return false;
         }
