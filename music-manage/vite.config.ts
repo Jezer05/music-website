@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite'
+import IconsResolver from 'unplugin-icons/resolver'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
@@ -30,13 +31,29 @@ export default defineConfig({
         'vue-router',
       ],
       dts: true,
-      resolvers: [ElementPlusResolver()]
+      resolvers: [
+        ElementPlusResolver(),
+        // Auto import icon components
+        // 自动导入图标组件
+        IconsResolver({
+          prefix: 'Icon',
+        }),
+      ]
     }),
     //  unplugin-vue-components来实现vue组件库的自动按需导入
     Components({
       dts: true,
       dirs: ['src/components'],
-      resolvers: [ElementPlusResolver()],
+      resolvers: [
+        // Auto register icon components
+        // 自动注册图标组件
+        IconsResolver({
+          enabledCollections: ['ep'],
+        }),
+        // Auto register Element Plus components
+        // 自动导入 Element Plus 组件
+        ElementPlusResolver()
+      ],
     }),
     vue(),
   ],

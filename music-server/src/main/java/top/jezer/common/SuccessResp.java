@@ -1,6 +1,5 @@
 package top.jezer.common;
 
-import com.alibaba.fastjson2.JSONObject;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,6 +10,7 @@ import top.jezer.constant.Code;
 @NoArgsConstructor
 public class SuccessResp {
     private Integer code;
+    // isSuccess会自动删除is
     private boolean isSuccess;
     private String type;
     private String message;

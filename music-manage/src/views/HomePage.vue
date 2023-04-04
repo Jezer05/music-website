@@ -1,10 +1,10 @@
 <template>
-<h1> Info</h1>
+  <h1>dsad</h1>
 </template>
 
 <script>
 export default {
-  name: "InfoPage"
+  name: "HomePage",
 }
 </script>
 

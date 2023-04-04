@@ -1,1 +1,36 @@
-import {defineStore} from "pinia";interface AdminInfo{    "id": number;    "name": string;    "avatar": string;}export const useAdminStore = defineStore({    id: 'app-admin',    state: () => ({        token: '',        adminInfo: {},        isLogin: false,    }),    getters: {        getToken: (state) => state.token,        getAdminInfo: (state) => state.adminInfo,        getIsLogin: (state) => state.isLogin    },    actions: {        // 修改token        setToken(token: string) {            this.token = token        },        // 修改用户信息        setAdminInfo(adminInfo: AdminInfo) {            this.adminInfo = adminInfo        },        // 修改用户登录状态        setIsLogin(isLogin: boolean){            this.isLogin = isLogin;        },        // 重置用户信息        resetAdmin() {            this.token = ''            this.adminInfo = {}            this.isLogin = false        }    },    persist: true,})
+import {defineStore} from "pinia";
+export const useAdminStore = defineStore({
+  id: 'app-admin',
+  state: ()=> ({
+    id: -1,
+    username: "",
+    password:"",
+    token: "",
+    avatar: "/img/avatarImages/user.jpg",
+    isLogin: false,
+    breadcrumbList: [],
+  }),
+  // getters: {
+  //     getToken: (state) => state.token,
+  //     getAdminInfo: (state) => state.adminInfo,
+  //     getIsLogin: (state) => state.isLogin
+  // },
+  actions: {
+    // 登录
+    login(adminInfo: object){
+      this.$patch({...adminInfo, isLogin: true, breadcrumbList: []})
+    },
+    // 注销
+    logout(){
+      this.$patch({
+        id: -1,
+        username: "",
+        password: "",
+        token: "",
+        isLogin: false,
+        breadcrumbList: [],
+      })
+    },
+  },
+  persist: true,
+})

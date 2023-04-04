@@ -1,10 +1,12 @@
 <template>
-<h1> Info</h1>
+ <div>
+
+ </div>
 </template>
 
 <script>
 export default {
-  name: "InfoPage"
+    name: "JezerAside",
 }
 </script>
 
