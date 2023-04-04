@@ -2,14 +2,13 @@ import axios, {AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse} fro
 import {useRouter} from "@/hooks/useRouter";
 import {RouterName} from "@/enums";
 import {useAdminStore} from "@/store/admin";
-import { ElMessage } from "element-plus";
 
 // 数据返回的接口
 interface Result{
     code: string;
     success: boolean;
     message: string;
-    type: string;
+    type: "error" | "warning" | "success" | "info";
     data: object | null;
 }
 // axios基础url，这里使用vite的proxy，所以要设置为空

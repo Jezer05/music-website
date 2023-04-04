@@ -20,14 +20,12 @@ import {RouterName, PLATFORM_NAME} from "@/enums";
 import {useRouter} from "@/hooks/useRouter";
 import {login} from "@/api/login";
 import {useAdminStore} from "@/store/admin";
-import {ElMessage} from "element-plus";
-
+const adminStore = useAdminStore();
 export default defineComponent({
   name: "LoginPage",
   setup() {
     // 需要放在setup内，这样routerManager中才能获取到proxy
     const { routerManager } = useRouter();
-    const adminStore = useAdminStore();
     const platformName = ref(PLATFORM_NAME)
     const loginForm = reactive({
       username: "",
@@ -39,12 +37,13 @@ export default defineComponent({
     });
     const submitForm = async () =>{
         const result = (await login(loginForm));
+        console.log(result);
         if (result.data != null){
             adminStore.login(result.data);
         }
         ElMessage({
             message: result.message,
-            type: result.type as "success" | "warning" | "error" | "info"
+            type: result.type
         });
         if (result.success) routerManager(RouterName.Info, { path: RouterName.Info });
     }

@@ -9,6 +9,6 @@ export const enum RouterName {
   Consumer = "/consumer",
   Collect = "/collect",
   Error = "/404",
-  SignIn = "/",
+  SignIn = "/login",
   SignOut = "0",
 }

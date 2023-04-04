@@ -35,6 +35,7 @@ public class TokenInterceptor implements HandlerInterceptor {
             json.put("code", 6000);
             json.put("isSuccess", false);
             json.put("type", "error");
+            System.out.println("请求被拦截");
             response.getWriter().append(json.toString());
         } catch (Exception e) {
             return false;

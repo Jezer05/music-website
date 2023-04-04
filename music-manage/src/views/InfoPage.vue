@@ -1,5 +1,7 @@
 <template>
-<h1> Info</h1>
+  <div>
+      <h1>hhahd</h1>
+  </div>
 </template>
 
 <script>

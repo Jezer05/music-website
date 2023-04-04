@@ -34,7 +34,7 @@ import {useAdminStore} from "@/store/admin";
 import {storeToRefs} from "pinia";
 import emitter from "@/utils/emitter";
 import {attachImageUrl} from "@/utils/picSupport";
-
+const adminStore = useAdminStore();
 export default defineComponent({
   name: "JezerHeader",
   components: {
@@ -43,9 +43,7 @@ export default defineComponent({
   },
   setup() {
     const { routerManager } = useRouter();
-    const adminStore = useAdminStore();
-
-    const collapse = ref(true);
+    const collapse = ref(false);
     // 解构赋值且为响应式
     const {username, avatar} = storeToRefs(adminStore);
     const platformName = ref(PLATFORM_NAME);

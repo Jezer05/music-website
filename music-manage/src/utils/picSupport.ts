@@ -1,5 +1,5 @@
-const BaseURL = "localhost:8888"
 // 获得图片
 export function attachImageUrl(url:string) {
-  return `${BaseURL}/${url}`
+  // 这里配置proxy后很神奇
+  return `http:/api/${url}`
 }
