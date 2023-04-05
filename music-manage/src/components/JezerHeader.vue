@@ -1,19 +1,16 @@
 <template>
   <div class="header">
     <div class="collapse-btn" @click="collapseChange">
-      <el-icon v-if="!collapse"><expand /></el-icon>
-      <el-icon v-else><fold /></el-icon>
+      <el-icon v-if="!collapse" color="#58bfb7"><expand /></el-icon>
+      <el-icon v-else color="#99bcac"><fold /></el-icon>
     </div>
     <div class="logo">{{ platformName }}</div>
     <div class="header-right">
       <div class="header-user-con">
-        <div class="user-avatar">
-          <img :src="attachImageUrl(avatar)" alt="头像显示失败"/>
-        </div>
+        <el-avatar :size="50" :src="attachImageUrl(avatar)" />
         <el-dropdown class="user-name" trigger="click" @command="handleCommand">
           <span class="el-dropdown-link">
             {{ username }}
-            <i class="el-icon-caret-bottom"></i>
           </span>
           <template #dropdown>
             <el-dropdown-menu>
@@ -86,10 +83,11 @@ export default defineComponent({
   height: 60px;
   display: flex;
   align-items: center;
+  font-family: LXGWWenKai, serif;
   font-size: 20px;
-  color: #2c3e50;
+  color: #80A492;
   background: #ffff;
-  box-shadow: 0px 0px 8px 2px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 8px 2px rgba(0, 0, 0, 0.3);
 }
 
 .collapse-btn {

@@ -7,7 +7,7 @@ export const useAdminStore = defineStore({
     password:"",
     token: "",
     avatar: "/img/avatarImages/user.jpg",
-    isLogin: false,
+    isLogin: 0,
     breadcrumbList: [],
   }),
   // getters: {
@@ -18,7 +18,7 @@ export const useAdminStore = defineStore({
   actions: {
     // 登录
     login(adminInfo: object){
-      this.$patch({...adminInfo, isLogin: true, breadcrumbList: []})
+      this.$patch({...adminInfo, isLogin: 1, breadcrumbList: []})
     },
     // 注销
     logout(){
@@ -27,7 +27,7 @@ export const useAdminStore = defineStore({
         username: "",
         password: "",
         token: "",
-        isLogin: false,
+        isLogin: 0,
         breadcrumbList: [],
       })
     },

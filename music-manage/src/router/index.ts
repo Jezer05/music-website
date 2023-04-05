@@ -3,7 +3,7 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    redirect: '/info',
+    redirect: '/dashboard',
   },
   {
     path: '/login',
@@ -12,12 +12,18 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
     component: () => import('@/views/HomePage.vue'),
-    meta: { title: '自述文件' },
+    meta: {
+      title: '自述文件',
+      requireAuth: true,
+    },
     children: [
       {
-        path: '/Info',
+        path: '/dashboard',
         component: () => import('@/views/InfoPage.vue'),
-        meta: { title: 'Info' }
+        meta: {
+          title: '仪表盘',
+          requireAuth: true,
+        }
       },
       // {
       //     path: '/song',
@@ -62,5 +68,15 @@ const router = createRouter({
   history: createWebHistory(),
   routes
 })
-
+router.beforeEach((to,from,next)=>{
+  document.title = `${to.meta.title} | 麻薯音乐`;
+  const  admin = localStorage.getItem("app-admin")
+  let isLogin = 0;
+  if (admin !=  null)
+    isLogin = JSON.parse(admin).isLogin
+  if (to.meta.requireAuth == true && isLogin == 0){
+    ElMessage.error("您还未登录，请先登录");
+    next('/login');
+  }else next();
+})
 export default router
