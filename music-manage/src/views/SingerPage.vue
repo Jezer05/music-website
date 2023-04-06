@@ -1,0 +1,353 @@
+<template>
+  <div class="container">
+    <div class="handle-box">
+      <el-button @click="deleteSelected">批量删除</el-button>
+      <el-input placeholder="筛选歌手" v-model="searchWord"></el-input>
+      <el-button type="primary" @click="editVisible = true;isAdd = true">添加歌手</el-button>
+    </div>
+    <el-table border size="small" :data="data" @selection-change="handleSelectionChange">
+      <el-table-column type="selection" width="40" align="center"></el-table-column>
+      <el-table-column label="ID" prop="id" width="50" align="center"></el-table-column>
+      <el-table-column label="歌手图片" prop="pic" width="110" align="center">
+        <template v-slot="scope">
+          <div class="singer-img">
+            <img :src="attachImageUrl(scope.row.pic)" style="width: 100%" />
+          </div>
+          <el-upload :show-file-list="false" :on-success="handleImgSuccess" :before-upload="beforeImgUpload" :http-request="updateAvatar">
+            <el-button>更新图片</el-button>
+          </el-upload>
+        </template>
+      </el-table-column>
+      <el-table-column label="歌手" prop="name" width="120" align="center"></el-table-column>
+      <el-table-column label="性别" prop="sex" width="60" align="center">
+        <template v-slot="scope">
+          <div>{{ sexMap(scope.row.sex) }}</div>
+        </template>
+      </el-table-column>
+      <el-table-column label="出生" prop="birth" width="120" align="center">
+<!--        <template v-slot="scope">-->
+<!--          <div>{{ getBirth(scope.row.birth) }}</div>-->
+<!--        </template>-->
+      </el-table-column>
+      <el-table-column label="地区" prop="location" width="100" align="center"></el-table-column>
+      <el-table-column label="简介" prop="introduction">
+        <template v-slot="scope">
+          <p style="height: 100px; overflow: scroll">
+              {{ scope.row.introduction }}
+          </p>
+        </template>
+      </el-table-column>
+      <el-table-column label="歌曲管理" width="120" align="center">
+        <template v-slot="scope">
+          <el-button @click="goSongPage(scope.row)">歌曲管理</el-button>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" width="160" align="center">
+        <template v-slot="scope">
+          <el-button @click="editRow(scope.row);isAdd=false">编辑</el-button>
+          <el-button type="danger" @click="deleteRow(scope.row.id)">删除</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+<!--    页脚导航-->
+    <el-pagination
+            class="pagination"
+            background
+            layout="total, prev, pager, next"
+            :current-page="currentPage"
+            :page-size="pageSize"
+            :total="tableData.length"
+            @current-change="handleCurrentChange"
+    >
+    </el-pagination>
+  </div>
+
+	<!-- 添加/修改歌手信息 -->
+  <el-dialog title="添加歌手" v-model="editVisible" :before-close="handleEditClose">
+    <el-form label-width="80px" :model="editForm" :rules="singerRule">
+      <el-form-item label="歌手名" prop="name">
+        <el-input v-model="editForm.name"></el-input>
+      </el-form-item>
+      <el-form-item label="性别" prop="sex">
+        <el-radio-group v-model="editForm.sex">
+          <el-radio :label="0">女</el-radio>
+          <el-radio :label="1">男</el-radio>
+          <el-radio :label="2">保密</el-radio>
+          <el-radio :label="3">不明</el-radio>
+        </el-radio-group>
+      </el-form-item>
+      <el-form-item label="故乡" prop="location">
+        <el-input v-model="editForm.location"></el-input>
+      </el-form-item>
+      <el-form-item label="出生日期" prop="birth">
+        <el-date-picker type="date" v-model="editForm.birth"></el-date-picker>
+      </el-form-item>
+      <el-form-item label="歌手介绍" prop="introduction">
+        <el-input type="textarea" v-model="editForm.introduction"></el-input>
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="editVisible = false; clearEditForm()">取 消</el-button>
+        <el-button v-if="isAdd" type="primary" @click="addSinger">确 定</el-button>
+        <el-button v-else type="primary" @click="saveEdit">确 定</el-button>
+      </span>
+    </template>
+  </el-dialog>
+</template>
+
+<script lang="ts">
+import { defineComponent } from 'vue'
+import {useRouter} from "@/hooks/useRouter";
+import {useUpload} from "@/hooks/useUpload";
+import {HttpManager} from "@/api/request";
+import {SingerReqForm} from "@/api/type";
+import {RouterName} from "@/enums";
+import {useAdminStore} from "@/store/admin";
+import {attachImageUrl, getBirth, sexMap} from "@/utils";
+const adminStore = useAdminStore();
+export default defineComponent({
+  methods: {sexMap, attachImageUrl},
+  setup(){
+    const {routerManager} = useRouter();
+    const {beforeImgUpload} = useUpload();
+    // 所有歌手数据
+    let tableData = ref([]);
+    // 页面展示数据
+    let tempData = ref([]);
+    // 收缩关键词
+    const searchWord = ref('');
+    // 页面数据容量
+    const pageSize = ref(5);
+    // 当前页
+    const currentPage = ref(1);
+    // 分页后数据
+    const data = computed(() => {
+      return tempData.value.slice((currentPage.value - 1) * pageSize.value, currentPage.value * pageSize.value);
+    })
+    // 挂载时读取数据
+    onMounted(() => {
+      getData()
+      // console.log(data);
+    })
+    async function getData() {
+      tableData.value = [];
+      tempData.value = [];
+      const result = await HttpManager.getAllSinger();
+      tableData.value = result.data;
+      tempData.value = result.data;
+      // console.log(tempData);
+      currentPage.value = 1;
+    }
+    // 处理当前页数
+    function handleCurrentChange(val:number) {
+      currentPage.value = val;
+    }
+    // 跳转到歌曲页面
+    function goSongPage(row:any) {
+      const breadcrumbList = reactive([
+        {
+          path: RouterName.Singer,
+          name: "歌手管理",
+        },
+        {
+          path: "",
+          name: "歌曲信息",
+        },
+      ]);
+      adminStore.setBreadcrumbList(breadcrumbList);
+      routerManager(RouterName.Song, {
+        path: RouterName.Song,
+        query: { id: row.id, name: row.name },
+      });
+    }
+    /**
+     * 添加歌手
+     */
+    const editVisible = ref(false);
+    // 标记现在是添加歌手还是更新歌手
+    const isAdd = ref(true);
+    const editForm : SingerReqForm= reactive({
+      name: "",
+      sex: 3,
+      birth: new Date(),
+      location: "",
+      introduction: "",
+    });
+    const singerRule = reactive({
+      name: [{ required: true, trigger: "change" }],
+      sex: [{ required: true, trigger: "change" }],
+    });
+    const clearEditForm = () => {
+      editForm.name = "";
+      editForm.sex = 3;
+      editForm.birth = new Date();
+      editForm.location = "";
+      editForm.introduction = "";
+    }
+    async function addSinger() {
+      if (editForm.name.trim() == '') {
+        console.log("@@" + editForm.name.trim() == '')
+        ElMessage.error("歌手姓名不能为空")
+        return
+      }
+      const result = await HttpManager.addSinger(editForm);
+      ElMessage({
+        message: result.message,
+        type: result.type,
+      });
+      if (result.success) {
+        // 重新获得数据并清空表单
+        getData();
+        clearEditForm();
+      }
+      editVisible.value = false;
+    }
+    /**
+     * 编辑
+     */
+    function editRow(row:any) {
+      editVisible.value = true;
+      editForm.name = row.name;
+      editForm.sex = row.sex;
+      editForm.birth = row.birth;
+      editForm.location = row.location;
+      editForm.introduction = row.introduction;
+    }
+    const handleEditClose = (done: () => void) => {
+      ElMessageBox.confirm('Are you sure to close this dialog?')
+        .then(() => {
+          clearEditForm();
+          done();
+        })
+        .catch(() => {
+          // catch error
+        })
+    }
+    async function saveEdit(row:any) {
+      if (editForm.name.trim() == '') {
+        ElMessage.error("歌手姓名不能为空")
+        return
+      }
+      try {
+        const result = await HttpManager.updateSingerMsg(row.id, editForm);
+        ElMessage({
+          message: result.message,
+          type: result.type,
+        });
+        if (result.success) {
+          getData();
+          clearEditForm();
+        }
+        editVisible.value = false;
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    // 更新头像
+    function updateAvatar(param:any) {
+      return HttpManager.updateSingerAvatar(param.id,param.file);
+    }
+    function handleImgSuccess(response:any, file:any) {
+      ElMessage({
+        message: response.message,
+        type: response.type,
+      });
+      if (response.success) getData();
+    }
+    /**
+     * 删除
+     */
+    let mulDelSelection = reactive([]); // 记录当前要删除的列表
+    function deleteRow(id:number) {
+      ElMessageBox.confirm(
+        'proxy will permanently delete the file. Continue?',
+        'Warning',
+        {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Cancel',
+          type: 'warning',
+        }
+      )
+        .then(async () => {
+          const result = await HttpManager.deleteSingerById(id)
+          if (result.success) await getData();
+          ElMessage({
+            type: result.type,
+            message: result.message,
+          })
+        })
+        .catch(() => {
+          ElMessage({
+            type: 'info',
+            message: 'Delete canceled',
+          })
+        })
+    }
+    function handleSelectionChange(val: any) {
+      mulDelSelection = val;
+    }
+    function deleteSelected() {
+      ElMessageBox.confirm(
+        'proxy will permanently delete the file. Continue?',
+        'Warning',
+        {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Cancel',
+          type: 'warning',
+        }
+      )
+        .then(async () => {
+          const result = await HttpManager.deleteSinger(mulDelSelection)
+          if (result.success) await getData();
+          ElMessage({
+            type: result.type,
+            message: result.message,
+          })
+        })
+        .catch(() => {
+          ElMessage({
+            type: 'info',
+            message: 'Delete canceled',
+          })
+        })
+      mulDelSelection = [];
+    }
+    return {
+      beforeImgUpload,
+      tableData,
+      tempData,
+      searchWord,
+      pageSize,
+      currentPage,
+      data,
+      handleCurrentChange,
+      goSongPage,
+      handleEditClose,
+      editVisible,
+      isAdd,
+      editForm,
+      singerRule,
+      clearEditForm,
+      addSinger,
+      updateAvatar,
+      editRow,
+      saveEdit,
+      handleImgSuccess,
+      deleteRow,
+      handleSelectionChange,
+      deleteSelected,
+    }
+  }
+})
+</script>
+
+<style scoped>
+.singer-img {
+  width: 100%;
+  height: 80px;
+  border-radius: 5px;
+  margin-bottom: 5px;
+  overflow: hidden;
+}
+</style>

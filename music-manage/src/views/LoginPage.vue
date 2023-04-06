@@ -16,10 +16,12 @@
 </template>
 
 <script lang="ts">
+import { defineComponent } from 'vue'
 import {RouterName, PLATFORM_NAME} from "@/enums";
 import {useRouter} from "@/hooks/useRouter";
-import {login} from "@/api/login";
+import {HttpManager} from "@/api/request";
 import {useAdminStore} from "@/store/admin";
+import {LoginReqForm} from "@/api/type";
 const adminStore = useAdminStore();
 export default defineComponent({
   name: "LoginPage",
@@ -27,7 +29,7 @@ export default defineComponent({
     // 需要放在setup内，这样routerManager中才能获取到proxy
     const { routerManager } = useRouter();
     const platformName = ref(PLATFORM_NAME)
-    const loginForm = reactive({
+    const loginForm : LoginReqForm = reactive({
       username: "",
       password: "",
     });
@@ -36,16 +38,20 @@ export default defineComponent({
       password: [{ required: true, message: "请输入密码", trigger: "blur" }],
     });
     const submitForm = async () =>{
-        const result = (await login(loginForm));
-        console.log(result);
-        if (result.data != null){
-            adminStore.login(result.data);
-        }
-        ElMessage({
-            message: result.message,
-            type: result.type
-        });
-        if (result.success) routerManager(RouterName.Info, { path: RouterName.Info });
+      if (loginForm.username.trim() == '' || loginForm.password == ''){
+        ElMessage.error("用户名和密码不能为空")
+        return
+      }
+      const result = (await HttpManager.login(loginForm));
+      console.log(result);
+      if (result.data != null){
+          adminStore.login(result.data);
+      }
+      ElMessage({
+          message: result.message,
+          type: result.type
+      });
+      if (result.success) routerManager(RouterName.Info, { path: RouterName.Info });
     }
     return {
       platformName,

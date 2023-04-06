@@ -91,7 +91,7 @@ public class SingerController {
     @GetMapping
     public Object getAllSinger(){
         try {
-            return new SuccessResp("歌手查询成功", singerService.getAllSinger()).getMessage();
+            return new SuccessResp("歌手查询成功", singerService.getAllSinger());
         }catch (Exception e){
             throw  new SystemException();
         }

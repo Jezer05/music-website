@@ -1,15 +1,13 @@
 import axios, {AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse} from "axios";
-import {useRouter} from "@/hooks/useRouter";
-import {RouterName} from "@/enums";
 import {useAdminStore} from "@/store/admin";
-
+import router from "@/router";
 // 数据返回的接口
 interface Result{
     code: string;
     success: boolean;
     message: string;
     type: "error" | "warning" | "success" | "info";
-    data: object | null;
+    data: any;
 }
 // axios基础url，这里使用vite的proxy，所以要设置为空
 const URL = '';
@@ -30,7 +28,7 @@ const config = {
     withCredentials: true
 }
 
-export class RequestHttp {
+class RequestHttp {
     // 定义成员变量并指定类型
     service: AxiosInstance;
     public constructor(config: AxiosRequestConfig) {
@@ -43,10 +41,9 @@ export class RequestHttp {
          */
         this.service.interceptors.request.use(
             // 这里有axios的bug，按理应该是AxiosRequestConfig
-            /* eslint-disable */
             (config: any)  => {
-                /* eslint-enable */
-                const token = localStorage.getItem('token') || '';
+                const token = adminStore.token;
+                // console.log("@@"+ token)
                 return {
                     ...config,
                     headers: {
@@ -65,73 +62,65 @@ export class RequestHttp {
         * 服务器换返回信息 -> [拦截统一处理] -> 客户端JS获取到信息
         */
         this.service.interceptors.response.use(
-            (response: AxiosResponse) => {
-                const {data} = response; // 解构
-                if (data.code === RequestEnums.EXPIRED) {
-                    // 登录信息失效，应跳转到登录页面，并清空pinia和localStorage的数据
-                    adminStore.logout();
-                    ElMessage.error("token失效，请重新登录")
-                    setTimeout(() =>
-                        useRouter().routerManager(RouterName.SignIn, {path: RouterName.SignIn}),
-                        2000);
-                    return Promise.reject(data);
-                }
-                // 全局错误信息拦截（防止下载文件得时候返回数据流，没有code，直接报错）
-                // if (data.code && data.code !== RequestEnums.SUCCESS) {
-                //     ElMessage.error(data); // 此处也可以使用组件提示报错信息
-                //     return Promise.reject(data)
-                // }
-                return data;
-            },
-            (error: AxiosError) => {
-                const {response} = error;
-                if (response) {
-                    this.handleCode(response.status)
-                }
-                if (!window.navigator.onLine) {
-                    ElMessage.error('网络连接失败');
-                    // 可以跳转到错误页面，也可以不做操作
-                }
-                return Promise.reject(response);
+          (response: AxiosResponse) => {
+          const {data} = response; // 解构
+          if (data.code === RequestEnums.EXPIRED) {
+            // 登录信息失效，应跳转到登录页面，并清空pinia和localStorage的数据
+            adminStore.logout();
+            ElMessage.error("token失效，请重新登录")
+            // 这里不能通过全局路由进行跳转，因为无法通过getInstance获得实例
+            // useRouter().routerManager(RouterName.SignIn, {path: RouterName.SignIn})
+            router.replace({
+              path: "/login"
+            })
+            return Promise.reject(data);
+          }
+            // 全局错误信息拦截（防止下载文件得时候返回数据流，没有code，直接报错）
+            // if (data.code && data.code !== RequestEnums.SUCCESS) {
+            //     ElMessage.error(data); // 此处也可以使用组件提示报错信息
+            //     return Promise.reject(data)
+            // }
+            return data;
+        },
+          (error: AxiosError) => {
+            const {response} = error;
+            if (response) {
+              this.handleCode(response.status)
             }
+            if (!window.navigator.onLine) {
+              ElMessage.error('网络连接失败');
+              // 可以跳转到错误页面，也可以不做操作
+            }
+            return Promise.reject(response);
+        }
         )
     }
     handleCode(code: number):void {
-        switch(code) {
-            case 401:
-                ElMessage.error('登录失败，请重新登录');
-                break;
-            case 404:
-                ElMessage.error("请求不存在");
-                break;
-            default:
-                ElMessage.error('请求失败');
-                break;
-        }
+      switch(code) {
+        case 401:
+          ElMessage.error('登录失败，请重新登录');
+          break;
+        case 404:
+          ElMessage.error("请求不存在");
+          break;
+        default:
+          ElMessage.error('请求失败');
+          break;
+      }
     }
 
     // 常用方法封装
     get(url: string, params?: object): Promise<Result> {
-        return this.service.get("api" + url, params)
+      return this.service.get("api" + url, params)
     }
     post(url: string, params = {}): Promise<Result> {
-        return this.service.post("api" + url, params)
+      return this.service.post("api" + url, params)
     }
     delete(url: string, params = {}): Promise<Result> {
-        return new Promise((resolve, reject) => {
-            this.service.delete("api" + url, params).then(
-                response => resolve(response.data),
-                error => reject(error)
-            )
-        });
+      return this.service.delete("api" + url, params)
     }
     put(url: string, params = {}): Promise<Result> {
-        return new Promise((resolve, reject) => {
-            this.service.put("api" + url, params).then(
-                response => resolve(response.data),
-                error => reject(error)
-            )
-        });
+      return this.service.put("api" + url, params)
     }
 }
 

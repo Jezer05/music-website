@@ -21,6 +21,7 @@ public class TokenInterceptor implements HandlerInterceptor {
         }
         response.setCharacterEncoding("utf-8");
         String token = request.getHeader("x-access-token");
+        //System.out.println(token);
         if (token!=null){
             boolean result= TokenUtils.verify(token);
             if (result){
@@ -33,7 +34,7 @@ public class TokenInterceptor implements HandlerInterceptor {
             JSONObject json=new JSONObject();
             json.put("message", "登录状态失效，请重新登录");
             json.put("code", 6000);
-            json.put("isSuccess", false);
+            json.put("success", false);
             json.put("type", "error");
             System.out.println("请求被拦截");
             response.getWriter().append(json.toString());

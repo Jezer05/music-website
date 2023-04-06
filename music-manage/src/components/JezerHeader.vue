@@ -30,7 +30,7 @@ import {Expand, Fold} from "@element-plus/icons-vue";
 import {useAdminStore} from "@/store/admin";
 import {storeToRefs} from "pinia";
 import emitter from "@/utils/emitter";
-import {attachImageUrl} from "@/utils/picSupport";
+import {attachImageUrl} from "@/utils";
 const adminStore = useAdminStore();
 export default defineComponent({
   name: "JezerHeader",

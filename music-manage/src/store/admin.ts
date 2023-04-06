@@ -31,6 +31,10 @@ export const useAdminStore = defineStore({
         breadcrumbList: [],
       })
     },
+    // 面包屑导航
+    setBreadcrumbList(breadcrumbList:any){
+      this.breadcrumbList = breadcrumbList
+    }
   },
   persist: true,
 })
