@@ -8,6 +8,7 @@ import top.jezer.domain.Singer;
 import top.jezer.mapper.SingerMapper;
 import top.jezer.service.SingerService;
 
+
 import java.util.List;
 
 @Service
@@ -16,14 +17,11 @@ public class SingerServiceImpl implements SingerService {
     private SingerMapper singerMapper;
     @Override
     public boolean addSinger(Singer singer) {
-        String location = singer.getLocation();
-        String introduction = singer.getIntroduction();
-        if (null != location)
-            location = location.trim();
-        if (null != introduction)
-            introduction = introduction.trim();
-        singer.setLocation(location);
-        singer.setIntroduction(introduction);
+        // 只可能传递字符串或者空串
+        // 去除多余符号
+        singer.setName(singer.getName().trim());
+        singer.setLocation(singer.getLocation().trim());
+        singer.setIntroduction(singer.getIntroduction().trim());
         return singerMapper.insert(singer) > 0;
     }
     @Override
@@ -48,6 +46,12 @@ public class SingerServiceImpl implements SingerService {
     public boolean deleteSinger(Integer id) {
         return singerMapper.deleteById(id) > 0;
     }
+
+    @Override
+    public boolean deleteSingers(List<Integer> ids) {
+        return singerMapper.deleteBatchIds(ids) > 0;
+    }
+
 
     @Override
     public List<Singer> getAllSinger() {

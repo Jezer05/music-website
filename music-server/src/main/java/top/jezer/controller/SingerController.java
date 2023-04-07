@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 @RestController
 @RequestMapping("/singers")
@@ -25,43 +26,17 @@ public class SingerController {
     @Autowired
     private SingerServiceImpl singerService;
     // 添加歌手
-    @PostMapping("/add")
-    public Object addSinger(HttpServletRequest req){
-        String name = req.getParameter("name");
-        String sex = req.getParameter("sex");
-        String birth = req.getParameter("birth");
-        String location = req.getParameter("location");
-        String introduction = req.getParameter("introduction");
-        // 歌手姓名不能为空串
-        if (StringUtils.isNotBlank(name)){
-            name = name.trim();
-            try {
-                if (singerService.getSingerByNameEq(name) != null)
-                    return new ErrorResp("已存在同名歌手");
-            } catch (Exception e){
-                throw new SystemException();
-            }
-        } else return new ErrorResp("歌手姓名不能为空");
-        if (!(null == sex || sex.trim().equals("0") || sex.trim().equals("1")))
-            return new ErrorResp("性别数据输入不合法");
-        Singer singer = new Singer();
-        singer.setName(name);
-        if (sex == null)
-            singer.setSex(null);
-        else singer.setSex(Integer.parseInt(sex));
+    @PostMapping
+    public Object addSinger(@RequestBody Singer singer){
+        // 数据类型已在前端处理和判空
+        String name = singer.getName().trim();
+        try {
+            if (singerService.getSingerByNameEq(name) != null)
+                return new ErrorResp("已存在同名歌手");
+        } catch (Exception e){
+            throw new SystemException();
+        }
         singer.setPic("/img/singerPic/user.jpg");
-        if (StringUtils.isNotBlank(birth)) {
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            Date myBirth;
-            try {
-                myBirth = dateFormat.parse(birth.trim());
-                singer.setBirth(myBirth);
-            } catch (Exception e) {
-                throw new BusinessException("日期格式转换有误，应为yyyy-MM-dd");
-            }
-        } else singer.setBirth(null);
-        singer.setLocation(location);
-        singer.setIntroduction(introduction);
         try {
             boolean res = singerService.addSinger(singer);
             if (res) {
@@ -74,15 +49,28 @@ public class SingerController {
         }
     }
     // 删除歌手
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public Object deleteSinger(@PathVariable Integer id){
-        if (null == singerService.getSingerById(id))
-            return new ErrorResp("查询不到对应歌手").getMessage();
+        //if (null == singerService.getSingerById(id))
+        //    return new ErrorResp("查询不到对应歌手");
         try {
             boolean res = singerService.deleteSinger(id);
             if (res)
-                return new SuccessResp("歌手删除成功").getMessage();
-            else return new ErrorResp("歌手删除失败").getMessage();
+                return new SuccessResp("歌手删除成功");
+            else return new ErrorResp("歌手删除失败");
+        }catch (Exception e){
+            throw new SystemException();
+        }
+    }
+    // 批量删除歌手
+    @DeleteMapping
+    public Object deleteSingers(@RequestBody List<Integer> ids){
+        System.out.println(ids);
+        try {
+            boolean res = singerService.deleteSingers(ids);
+            if (res)
+                return new SuccessResp("歌手删除成功");
+            else return new ErrorResp("歌手删除失败");
         }catch (Exception e){
             throw new SystemException();
         }
@@ -96,6 +84,7 @@ public class SingerController {
             throw  new SystemException();
         }
     }
+
     // 根据歌手id查找
     @GetMapping("/{id}")
     public Object getSingerById(@PathVariable Integer id){
@@ -107,27 +96,27 @@ public class SingerController {
     }
 
     // 根据歌手名查找
-    @GetMapping("/name/detail")
-    public Object getSingerByName(String name){
-        if (null == name)
-            return new ErrorResp("歌手名称不能为空").getMessage();
-        try {
-            return new SuccessResp("查询成功", singerService.getSingerByName(name)).getMessage();
-        }catch (Exception e){
-            throw new SystemException();
-        }
-    }
+    //@GetMapping("/name/detail")
+    //public Object getSingerByName(String name){
+    //    if (null == name)
+    //        return new ErrorResp("歌手名称不能为空").getMessage();
+    //    try {
+    //        return new SuccessResp("查询成功", singerService.getSingerByName(name)).getMessage();
+    //    }catch (Exception e){
+    //        throw new SystemException();
+    //    }
+    //}
     // 根据歌手性别查找
-    @GetMapping("/sex/detail/{sex}")
-    public Object getSingerBySex(@PathVariable("sex") Integer sex){
-        if (sex != 0 && sex != 1)
-            return new ErrorResp("性别数据输入不合法").getMessage();
-        try {
-            return new SuccessResp("歌手查询成功", singerService.getSingerBySex(sex)).getMessage();
-        }catch (Exception e){
-            throw new SystemException();
-        }
-    }
+    //@GetMapping("/sex/detail/{sex}")
+    //public Object getSingerBySex(@PathVariable("sex") Integer sex){
+    //    if (sex != 0 && sex != 1)
+    //        return new ErrorResp("性别数据输入不合法").getMessage();
+    //    try {
+    //        return new SuccessResp("歌手查询成功", singerService.getSingerBySex(sex)).getMessage();
+    //    }catch (Exception e){
+    //        throw new SystemException();
+    //    }
+    //}
     // 更新歌手信息
     @PutMapping("/update")
     public Object updateSinger(HttpServletRequest req){

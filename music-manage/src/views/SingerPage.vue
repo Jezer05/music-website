@@ -115,8 +115,6 @@ export default defineComponent({
     let tableData = ref([]);
     // 页面展示数据
     let tempData = ref([]);
-    // 收缩关键词
-    const searchWord = ref('');
     // 页面数据容量
     const pageSize = ref(5);
     // 当前页
@@ -128,7 +126,6 @@ export default defineComponent({
     // 挂载时读取数据
     onMounted(() => {
       getData()
-      // console.log(data);
     })
     async function getData() {
       tableData.value = [];
@@ -136,7 +133,6 @@ export default defineComponent({
       const result = await HttpManager.getAllSinger();
       tableData.value = result.data;
       tempData.value = result.data;
-      // console.log(tempData);
       currentPage.value = 1;
     }
     // 处理当前页数
@@ -161,6 +157,20 @@ export default defineComponent({
         query: { id: row.id, name: row.name },
       });
     }
+    // 监听搜索框
+    const searchWord = ref("");
+    watch(searchWord, () => {
+      if (searchWord.value === "") {
+        tempData.value = tableData.value;
+      } else {
+        tempData.value = [];
+        for (let item of tableData.value) {
+          if (item.name.includes(searchWord.value)) {
+            tempData.value.push(item);
+          }
+        }
+      }
+    });
     /**
      * 添加歌手
      */
@@ -187,7 +197,6 @@ export default defineComponent({
     }
     async function addSinger() {
       if (editForm.name.trim() == '') {
-        console.log("@@" + editForm.name.trim() == '')
         ElMessage.error("歌手姓名不能为空")
         return
       }
@@ -258,10 +267,10 @@ export default defineComponent({
     /**
      * 删除
      */
-    let mulDelSelection = reactive([]); // 记录当前要删除的列表
+    let mulDelSelection = ref([]); // 记录当前要删除的列表
     function deleteRow(id:number) {
       ElMessageBox.confirm(
-        'proxy will permanently delete the file. Continue?',
+        `确定要删除ID为${id}的歌手？`,
         'Warning',
         {
           confirmButtonText: 'OK',
@@ -270,7 +279,7 @@ export default defineComponent({
         }
       )
         .then(async () => {
-          const result = await HttpManager.deleteSingerById(id)
+          const result = await HttpManager.deleteSinger(id)
           if (result.success) await getData();
           ElMessage({
             type: result.type,
@@ -279,18 +288,23 @@ export default defineComponent({
         })
         .catch(() => {
           ElMessage({
-            type: 'info',
-            message: 'Delete canceled',
+            type: 'warning',
+            message: '删除操作已经取消',
           })
         })
     }
     function handleSelectionChange(val: any) {
-      mulDelSelection = val;
+      mulDelSelection.value = val;
     }
     function deleteSelected() {
+      const count = mulDelSelection.value.length;
+      if (count <= 0){
+        ElMessage.warning("请先选择需要删除的歌手")
+        return
+      }
       ElMessageBox.confirm(
-        'proxy will permanently delete the file. Continue?',
-        'Warning',
+        `确定要删除所选的${count}歌手吗？`,
+        '警告',
         {
           confirmButtonText: 'OK',
           cancelButtonText: 'Cancel',
@@ -298,8 +312,15 @@ export default defineComponent({
         }
       )
         .then(async () => {
-          const result = await HttpManager.deleteSinger(mulDelSelection)
-          if (result.success) await getData();
+          let ids: Array<number> = [];
+          for (let item of mulDelSelection.value){
+            ids.push(item.id);
+          }
+          const result = await HttpManager.deleteSingers(ids)
+          if (result.success) {
+            await getData();
+            mulDelSelection.value = [];
+          }
           ElMessage({
             type: result.type,
             message: result.message,
@@ -307,11 +328,10 @@ export default defineComponent({
         })
         .catch(() => {
           ElMessage({
-            type: 'info',
-            message: 'Delete canceled',
+            type: 'warning',
+            message: '删除操作已经取消',
           })
         })
-      mulDelSelection = [];
     }
     return {
       beforeImgUpload,

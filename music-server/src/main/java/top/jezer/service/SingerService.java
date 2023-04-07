@@ -13,6 +13,8 @@ public interface SingerService {
     boolean updateSinger(Singer singer);
     // 删除歌手
     boolean deleteSinger(Integer id);
+    // 根据id数组批量删除
+    boolean deleteSingers(List<Integer> ids);
     // 获得所有歌手
     List<Singer>  getAllSinger();
     // 根据id获得歌手信息

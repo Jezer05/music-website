@@ -43,7 +43,6 @@ export default defineComponent({
         return
       }
       const result = (await HttpManager.login(loginForm));
-      console.log(result);
       if (result.data != null){
           adminStore.login(result.data);
       }

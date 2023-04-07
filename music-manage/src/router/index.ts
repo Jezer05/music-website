@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
+import {useAdminStore} from "@/store/admin";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -7,7 +8,10 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/login',
-    component: () => import('@/views/LoginPage.vue')
+    component: () => import('@/views/LoginPage.vue'),
+    meta: {
+      title: '登录',
+    },
   },
   {
     path: '/',
@@ -73,10 +77,11 @@ const router = createRouter({
 })
 router.beforeEach((to,from,next)=>{
   document.title = `${to.meta.title} | 麻薯音乐`;
-  const  admin = localStorage.getItem("app-admin")
-  let isLogin = 0;
-  if (admin !=  null)
-    isLogin = JSON.parse(admin).isLogin
+  // let isLogin = 0;
+  // const  admin = localStorage.getItem("app-admin")
+  // if (admin !=  null)
+  //   isLogin = JSON.parse(admin).isLogin
+  const isLogin = useAdminStore().isLogin;
   if (to.meta.requireAuth == true && isLogin == 0){
     ElMessage.error("您还未登录，请先登录");
     next('/login');
