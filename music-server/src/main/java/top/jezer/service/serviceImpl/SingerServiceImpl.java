@@ -29,16 +29,13 @@ public class SingerServiceImpl implements SingerService {
         String name = singer.getName();
         String location = singer.getLocation();
         String introduction = singer.getIntroduction();
-        if (StringUtils.isNotBlank(name))
-            name = name.trim();
-        else name = null;
+        // 更新头像也调用了此操作，所以要判空
+        if (null != name)
+            singer.setName(name.trim());
         if (null != location)
-            location = location.trim();
+            singer.setLocation(location.trim());
         if (null != introduction)
-            introduction = introduction.trim();
-        singer.setName(name);
-        singer.setLocation(location);
-        singer.setIntroduction(introduction);
+            singer.setIntroduction(introduction.trim());
         return singerMapper.updateById(singer) > 0;
     }
 

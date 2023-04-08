@@ -10,11 +10,9 @@
       <el-table-column label="ID" prop="id" width="50" align="center"></el-table-column>
       <el-table-column label="歌手图片" prop="pic" width="110" align="center">
         <template v-slot="scope">
-          <div class="singer-img">
-            <img :src="attachImageUrl(scope.row.pic)" style="width: 100%" />
-          </div>
-          <el-upload :show-file-list="false" :on-success="handleImgSuccess" :before-upload="beforeImgUpload" :http-request="updateAvatar">
-            <el-button>更新图片</el-button>
+          <el-image :src="attachImageUrl(scope.row.pic)" style="width: 100%; height: 100px" fit="cover"/>
+          <el-upload :show-file-list="false"  :on-success="handleImgSuccess" :on-error="handleImgError" :before-upload="beforeImgUpload" :http-request="updateAvatar">
+            <el-button @click="handleAvatarId(scope.row.id)">更新图片</el-button>
           </el-upload>
         </template>
       </el-table-column>
@@ -25,16 +23,14 @@
         </template>
       </el-table-column>
       <el-table-column label="出生" prop="birth" width="120" align="center">
-<!--        <template v-slot="scope">-->
-<!--          <div>{{ getBirth(scope.row.birth) }}</div>-->
-<!--        </template>-->
+        <template v-slot="scope">
+          <div>{{ getBirth(scope.row.birth) }}</div>
+        </template>
       </el-table-column>
       <el-table-column label="地区" prop="location" width="100" align="center"></el-table-column>
       <el-table-column label="简介" prop="introduction">
         <template v-slot="scope">
-          <p style="height: 100px; overflow: scroll">
-              {{ scope.row.introduction }}
-          </p>
+          <p >{{ scope.row.introduction }}</p>
         </template>
       </el-table-column>
       <el-table-column label="歌曲管理" width="120" align="center">
@@ -51,13 +47,13 @@
     </el-table>
 <!--    页脚导航-->
     <el-pagination
-            class="pagination"
-            background
-            layout="total, prev, pager, next"
-            :current-page="currentPage"
-            :page-size="pageSize"
-            :total="tableData.length"
-            @current-change="handleCurrentChange"
+      class="pagination"
+      background
+      layout="total, prev, pager, next"
+      :current-page="currentPage"
+      :page-size="pageSize"
+      :total="tableData.length"
+      @current-change="handleCurrentChange"
     >
     </el-pagination>
   </div>
@@ -107,7 +103,7 @@ import {useAdminStore} from "@/store/admin";
 import {attachImageUrl, getBirth, sexMap} from "@/utils";
 const adminStore = useAdminStore();
 export default defineComponent({
-  methods: {sexMap, attachImageUrl},
+  methods: {getBirth, sexMap, attachImageUrl},
   setup(){
     const {routerManager} = useRouter();
     const {beforeImgUpload} = useUpload();
@@ -116,7 +112,7 @@ export default defineComponent({
     // 页面展示数据
     let tempData = ref([]);
     // 页面数据容量
-    const pageSize = ref(5);
+    const pageSize = ref(6);
     // 当前页
     const currentPage = ref(1);
     // 分页后数据
@@ -206,11 +202,10 @@ export default defineComponent({
         type: result.type,
       });
       if (result.success) {
-        // 重新获得数据并清空表单
-        getData();
         clearEditForm();
+        editVisible.value = false;
       }
-      editVisible.value = false;
+      getData();
     }
     /**
      * 编辑
@@ -254,10 +249,21 @@ export default defineComponent({
       }
     }
     // 更新头像
-    function updateAvatar(param:any) {
-      return HttpManager.updateSingerAvatar(param.id,param.file);
+    let avatarId = ref(-1);
+    function handleAvatarId(id: number){
+      avatarId.value = id
+    }
+    function updateAvatar(options : any) {
+      return HttpManager.updateSingerAvatar(avatarId.value, options.file);
     }
     function handleImgSuccess(response:any, file:any) {
+      ElMessage({
+        message: response.message,
+        type: response.type,
+      });
+      if (response.success) getData();
+    }
+    function handleImgError(response:any, file:any) {
       ElMessage({
         message: response.message,
         type: response.type,
@@ -280,7 +286,7 @@ export default defineComponent({
       )
         .then(async () => {
           const result = await HttpManager.deleteSinger(id)
-          if (result.success) await getData();
+          await getData();
           ElMessage({
             type: result.type,
             message: result.message,
@@ -351,9 +357,11 @@ export default defineComponent({
       clearEditForm,
       addSinger,
       updateAvatar,
+      handleAvatarId,
       editRow,
       saveEdit,
       handleImgSuccess,
+      handleImgError,
       deleteRow,
       handleSelectionChange,
       deleteSelected,
@@ -363,11 +371,4 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.singer-img {
-  width: 100%;
-  height: 80px;
-  border-radius: 5px;
-  margin-bottom: 5px;
-  overflow: hidden;
-}
 </style>

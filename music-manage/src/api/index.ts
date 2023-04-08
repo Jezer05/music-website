@@ -34,9 +34,9 @@ export class RequestHttp {
       // 实例化axios,加载app时配置且为一次性的，不支持后期修改
       this.service = axios.create(config);
       let type = 'application/json';
-      if (flag === "mul")
+      if (flag === "mul"){
         type = 'multipart/form-data'
-
+      }
       // 通过拦截器进行配置，会造成后期自定义配置被覆盖
       /**
        * 请求拦截器
@@ -50,7 +50,7 @@ export class RequestHttp {
           return {
             ...config,
             headers: {
-              'Content-Type': 'application/json',
+              'Content-Type': type,
               'x-access-token': token, // 请求头中携带token信息
             }
           }
@@ -130,5 +130,4 @@ export class RequestHttp {
 }
 export const axiosWithJson = new RequestHttp(config, "json")
 export const axiosWithMul = new RequestHttp(config, "mul");
-
 
