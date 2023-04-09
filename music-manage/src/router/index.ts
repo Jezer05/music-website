@@ -29,16 +29,19 @@ const routes: Array<RouteRecordRaw> = [
           requireAuth: true,
         }
       },
-      // {
-      //     path: '/song',
-      //     component: () => import('@/views/SongPage.vue'),
-      //     meta: { title: 'Song' }
-      // },
       {
         path: '/singer',
         component: () => import('@/views/SingerPage.vue'),
         meta: {
           title: 'Singer',
+          requireAuth: true,
+        }
+      },
+      {
+        path: '/song',
+        component: () => import('@/views/SongPage.vue'),
+        meta: {
+          title: 'Song',
           requireAuth: true,
         }
       },

@@ -10,3 +10,10 @@ export interface SingerReqForm{
   location: string,
   introduction: string,
 }
+
+export interface SongReqForm{
+  name:string,
+  singerId: number | null,
+  introduction: string,
+  lyric: string,
+}
