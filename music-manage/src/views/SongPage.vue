@@ -16,7 +16,7 @@
       <el-table-column label="ID" prop="id" width="50" align="center"/>
       <el-table-column label="歌曲图片" width="110" align="center">
         <template v-slot="scope">
-          <el-image :src="attachImageUrl(scope.row.pic)" style="width: 100%; height: 100px" fit="cover"/>
+          <el-image :src="attachUrl(scope.row.pic)" style="width: 100%; height: 100px" fit="cover"/>
 <!--          播放按钮遮罩-->
           <div class="play" @click="setSongUrl(scope.row)">
             <el-icon>
@@ -28,8 +28,8 @@
         </template>
       </el-table-column>
       <el-table-column label="歌名" prop="name" width="120" align="center"/>
-      <el-table-column label="简介" prop="introduction" width="60" align="center"/>
-      <el-table-column label="歌词" width="120" align="center">
+      <el-table-column label="简介" prop="introduction" width="120" align="center"/>
+      <el-table-column label="歌词"  align="center">
         <template v-slot="scope">
           <ul style="height: 100px; overflow: scroll">
             <li v-for="(item, index) in parseLyric(scope.row.lyric)" :key="index">
@@ -38,15 +38,17 @@
           </ul>
         </template>
       </el-table-column>
-      <el-table-column label="资源更新" width="100" align="center"/>
+      <el-table-column label="资源更新" width="100" align="center">
         <template v-slot = "scope">
-            <el-upload :show-file-list="false"  :on-success="handleImgSuccess" :on-error="handleImgError" :before-upload="beforeImgUpload" :http-request="updateImg">
+            <el-upload :show-file-list="false"  :on-success="handleResourceSuccess" :on-error="handleResourceError" :before-upload="beforeImgUpload" :http-request="updateImg">
               <el-button @click="handleSongId(scope.row.id)">更新图片</el-button>
             </el-upload>
-            <el-upload :show-file-list="false"  :on-success="handleSongSuccess" :on-error="handleSongError" :before-upload="beforeSongUpload" :http-request="updateSong">
+            <br />
+            <el-upload :show-file-list="false"  :on-success="handleResourceSuccess" :on-error="handleResourceError" :before-upload="beforeSongUpload" :http-request="updateUrl">
               <el-button @click="handleSongId(scope.row.id)">更新歌曲</el-button>
             </el-upload>
         </template>
+      </el-table-column>
       <el-table-column label="评论" width="90" align="center">
         <template v-slot="scope">
           <el-button @click="goCommentPage(scope.row.id)">评论</el-button>
@@ -74,7 +76,7 @@
 
 	<!-- 添加/修改歌手信息 -->
   <el-dialog title="添加歌手" v-model="editVisible" :before-close="handleEditClose">
-    <el-form label-width="80px" :model="editForm" :rules="songRule">
+    <el-form label-width="80px" :model="editForm" :rules="<FormRules>songRule">
       <el-form-item label="歌曲名">
         <el-input v-model="editForm.name"></el-input>
       </el-form-item>
@@ -84,7 +86,7 @@
       <el-form-item label="歌词">
         <el-input v-model="editForm.lyric"></el-input>
       </el-form-item>
-      <el-form-item label="歌曲上传">
+      <el-form-item v-if="isAdd" label="歌曲上传">
         <input type="file" name="file"  ref = "fileUpload" @change = 'beforeSongUpload(this)'/>
       </el-form-item>
     </el-form>
@@ -98,20 +100,27 @@
   </el-dialog>
 </template>
 <script setup lang="ts">
-import {ComponentInternalInstance, defineComponent} from "vue";
-import {parseLyric,attachImageUrl} from "@/utils";
+import {ComponentInternalInstance} from "vue";
+import {parseLyric,attachUrl} from "@/utils";
 import {useRouter} from "@/hooks/useRouter";
 import {useUpload} from "@/hooks/useUpload";
 import {HttpManager} from "@/api/request";
 import {RouterName} from "@/enums";
 import {SongReqForm} from "@/api/type";
+import {storeToRefs} from "pinia";
+import {useAdminStore} from "@/store/admin";
+import {usePlayerStore} from "@/store/player";
+import {FormRules} from "element-plus";
 
+const adminStore = useAdminStore();
+const playerStore = usePlayerStore();
 const {beforeImgUpload,beforeSongUpload} = useUpload();
 const {proxy} = getCurrentInstance() as ComponentInternalInstance;
 const {routerManager} = useRouter();
 
 // 跳转的歌手id
-const singerId = ref(proxy?.$route.query.id );
+let singerId: any;
+singerId = ref(proxy!.$route.query.id);
 // 所有歌手数据
 let tableData = ref([]);
 // 页面展示数据
@@ -124,6 +133,10 @@ const currentPage = ref(1);
 const data = computed(() => {
   return tempData.value.slice((currentPage.value - 1) * pageSize.value, currentPage.value * pageSize.value);
 })
+const {breadcrumbList} = storeToRefs(adminStore)
+// 音乐播放状态
+const toggle = ref(false);
+const {isPlay} = storeToRefs(playerStore)
 // 挂载时读取数据
 onMounted(() => {
   getData()
@@ -134,7 +147,34 @@ async function getData() {
   const result = await HttpManager.getSongBySingerId(singerId.value);
   tableData.value = result.data;
   tempData.value = result.data;
+  console.log(data.value);
   currentPage.value = 1;
+}
+function goCommentPage(id:number) {
+  const breadcrumbList = reactive([
+    {
+      path: RouterName.Singer,
+      name: "歌手管理",
+    },
+    {
+      path: RouterName.Song,
+      query: {
+        id: singerId.value,
+      },
+      name: "歌曲信息",
+    },
+    {
+      path: "",
+      name: "评论详情",
+    },
+  ]);
+  adminStore.setBreadcrumbList(breadcrumbList);
+  routerManager(RouterName.Comment, { path: RouterName.Comment, query: { id, type: 0 } });
+}
+function setSongUrl(row:any) {
+  playerStore.setUrl(row.url);
+  toggle.value = row.name;
+  isPlay.value ? playerStore.pause() : playerStore.play();
 }
 // 处理当前页数
 function handleCurrentChange(val:number) {
@@ -148,6 +188,7 @@ watch(searchWord, () => {
   } else {
     tempData.value = [];
     for (let item of tableData.value) {
+      //@ts-ignore
       if (item.name.includes(searchWord.value)) {
         tempData.value.push(item);
       }
@@ -160,6 +201,7 @@ const isAdd = ref(true);
 /**
  * 添加
  */
+const fileUpload = ref();
 const editForm : SongReqForm= reactive({
   name: "",
   singerId: singerId.value,
@@ -173,10 +215,11 @@ const clearEditForm = () => {
   editForm.name = "";
   editForm.introduction = "";
   editForm.lyric = "";
+  if (isAdd)
+    fileUpload.value = '';
 }
 async function addSong() {
-  const file = proxy?.$refs.file
-  if (file == null) {
+  if (fileUpload.value == '') {
     ElMessage.error("歌曲资源不能为空")
     return
   }
@@ -184,7 +227,7 @@ async function addSong() {
     ElMessage.error("歌曲名称不能为空")
     return
   }
-  const result = await HttpManager.addSong(editForm, file);
+  const result = await HttpManager.addSong(editForm, fileUpload.files[0]);
   ElMessage({
     message: result.message,
     type: result.type,
@@ -204,15 +247,16 @@ function editRow(row:any) {
   editForm.introduction = row.introduction;
   editForm.lyric = row.lyric;
 }
+
 const handleEditClose = (done: () => void) => {
-  ElMessageBox.confirm('Are you sure to close this dialog?')
-      .then(() => {
-        clearEditForm();
-        done();
-      })
-      .catch(() => {
-        // catch error
-      })
+  ElMessageBox.confirm('你确定要关闭窗口吗，数据将不会保存！')
+    .then(() => {
+      clearEditForm();
+      done();
+    })
+    .catch(() => {
+      // catch error
+    })
 }
 async function saveEdit(row:any) {
   if (editForm.name.trim() == '') {
@@ -220,7 +264,7 @@ async function saveEdit(row:any) {
     return
   }
   try {
-    const result = await HttpManager.updateSingerMsg(row.id, editForm);
+    const result = await HttpManager.updateSongMsg(row.id, editForm);
     ElMessage({
       message: result.message,
       type: result.type,
@@ -234,22 +278,25 @@ async function saveEdit(row:any) {
     console.error(error);
   }
 }
-// 更新头像
+// 更新资源
 let avatarId = ref(-1);
 function handleSongId(id: number){
   avatarId.value = id
 }
-function updateAvatar(options : any) {
-  return HttpManager.updateSingerAvatar(avatarId.value, options.file);
+function updateUrl(options : any) {
+  return HttpManager.updateSongUrl(avatarId.value, options.file);
 }
-function handleImgSuccess(response:any, file:any) {
+function updateImg(options : any) {
+  return HttpManager.updateSongImg(avatarId.value, options.file);
+}
+function handleResourceSuccess(response:any, file:any) {
   ElMessage({
     message: response.message,
     type: response.type,
   });
   if (response.success) getData();
 }
-function handleImgError(response:any, file:any) {
+function handleResourceError(response:any, file:any) {
   ElMessage({
     message: response.message,
     type: response.type,

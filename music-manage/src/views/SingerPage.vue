@@ -10,7 +10,7 @@
       <el-table-column label="ID" prop="id" width="50" align="center"></el-table-column>
       <el-table-column label="歌手图片" width="110" align="center">
         <template v-slot="scope">
-          <el-image :src="attachImageUrl(scope.row.pic)" style="width: 100%; height: 100px" fit="cover"/>
+          <el-image :src="attachUrl(scope.row.pic)" style="width: 100%; height: 100px" fit="cover"/>
           <el-upload :show-file-list="false"  :on-success="handleImgSuccess" :on-error="handleImgError" :before-upload="beforeImgUpload" :http-request="updateAvatar">
             <el-button @click="handleAvatarId(scope.row.id)">更新图片</el-button>
           </el-upload>
@@ -60,7 +60,7 @@
 
 	<!-- 添加/修改歌手信息 -->
   <el-dialog title="添加歌手" v-model="editVisible" :before-close="handleEditClose">
-    <el-form label-width="80px" :model="editForm" :rules="singerRules">
+    <el-form label-width="80px" :model="editForm" :rules="<FormRules>singerRules">
       <el-form-item label="歌手名" prop="name">
         <el-input v-model="editForm.name"></el-input>
       </el-form-item>
@@ -93,14 +93,14 @@
 </template>
 
 <script setup lang="ts">
-import { defineComponent } from 'vue'
 import {useRouter} from "@/hooks/useRouter";
 import {useUpload} from "@/hooks/useUpload";
 import {HttpManager} from "@/api/request";
 import {SingerReqForm} from "@/api/type";
 import {RouterName} from "@/enums";
 import {useAdminStore} from "@/store/admin";
-import {attachImageUrl, parseBirth, parseSex} from "@/utils";
+import {attachUrl, parseBirth, parseSex} from "@/utils";
+import {FormRules} from "element-plus";
 const adminStore = useAdminStore();
 
 const {routerManager} = useRouter();
@@ -115,7 +115,6 @@ const pageSize = ref(6);
 const currentPage = ref(1);
 // 分页后数据
 const data = computed(() => {
-  console.log(getCurrentInstance()?.proxy?.$route);
   return tempData.value.slice((currentPage.value - 1) * pageSize.value, currentPage.value * pageSize.value);
 })
 // 挂载时读取数据
@@ -203,7 +202,7 @@ async function addSinger() {
     clearEditForm();
     editVisible.value = false;
   }
-  getData();
+  await getData();
 }
 /**
  * 编辑
@@ -238,7 +237,7 @@ async function saveEdit(row:any) {
       type: result.type,
     });
     if (result.success) {
-      getData();
+      await getData();
       clearEditForm();
     }
     editVisible.value = false;

@@ -7,7 +7,7 @@
     <div class="logo">{{ platformName }}</div>
     <div class="header-right">
       <div class="header-user-con">
-        <el-avatar :size="50" :src="attachImageUrl(avatar)" />
+        <el-avatar :size="50" :src="attachUrl(avatar)" />
         <el-dropdown class="user-name" trigger="click" @command="handleCommand">
           <span class="el-dropdown-link">
             {{ username }}
@@ -22,7 +22,7 @@
       </div>
   </div>
 </template>
-<script lang="ts">
+<script setup lang="ts">
 
 import {useRouter} from "@/hooks/useRouter";
 import { RouterName, PLATFORM_NAME } from "@/enums";
@@ -30,50 +30,34 @@ import {Expand, Fold} from "@element-plus/icons-vue";
 import {useAdminStore} from "@/store/admin";
 import {storeToRefs} from "pinia";
 import emitter from "@/utils/emitter";
-import {attachImageUrl} from "@/utils";
+import {attachUrl} from "@/utils";
+
 const adminStore = useAdminStore();
-export default defineComponent({
-  name: "JezerHeader",
-  components: {
-    Expand,
-    Fold,
-  },
-  setup() {
-    const { routerManager } = useRouter();
-    const collapse = ref(false);
-    // 解构赋值且为响应式
-    const {username, avatar} = storeToRefs(adminStore);
-    const platformName = ref(PLATFORM_NAME);
+const { routerManager } = useRouter();
+const collapse = ref(false);
+// 解构赋值且为响应式
+const {username, avatar} = storeToRefs(adminStore);
+const platformName = ref(PLATFORM_NAME);
 
-    onMounted(() => {
-      if (document.body.clientWidth < 1500) {
-          collapseChange();
-      }
-    });
-
-    // 侧边栏折叠
-    function collapseChange() {
-      collapse.value = !collapse.value;
-      emitter.emit("collapse", collapse.value);
-    }
-    // 用户名下拉菜单选择事件
-    function handleCommand(command: string|null) {
-      if (command === "logout") {
-        adminStore.logout();
-        routerManager(RouterName.SignIn, { path: RouterName.SignIn });
-      }
-    }
-    return {
-      platformName,
-      username,
-      avatar,
-      collapse,
-      collapseChange,
-      handleCommand,
-      attachImageUrl: attachImageUrl,
-    };
-  },
+onMounted(() => {
+  if (document.body.clientWidth < 1500) {
+      collapseChange();
+  }
 });
+
+// 侧边栏折叠
+function collapseChange() {
+  collapse.value = !collapse.value;
+  emitter.emit("collapse", collapse.value);
+}
+// 用户名下拉菜单选择事件
+function handleCommand(command: string|null) {
+  if (command === "logout") {
+    adminStore.logout();
+    routerManager(RouterName.SignIn, { path: RouterName.SignIn });
+  }
+}
+
 </script>
 <style scoped>
 .header {

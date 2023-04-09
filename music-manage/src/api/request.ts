@@ -21,15 +21,19 @@ export const HttpManager = {
   // 根据id删除歌手
   deleteSinger: async (id: number) => axiosWithJson.delete(`/singers/${id}`),
   // 更新歌手图片
-  updateSingerAvatar: async (id:number, file:any)=> axiosWithMul.put(`/singers/avatar/${id}`, {"file": file}),
+  updateSingerAvatar: async (id:number, file:any)=> axiosWithMul.put(`/singers/avatar/${id}`, {file}),
   /**
    * 歌曲模块
    */
   // 根据歌手id查找歌曲
-  getSongBySingerId: async (id:number) => axiosWithJson.get(`/songs/${id}`),
+  getSongBySingerId: async (id:number) => axiosWithJson.get(`/songs/singer/detail/${id}`),
   // 为歌手添加歌曲
-  addSong: async (songReqForm: SongReqForm, file:any) => axiosWithJson.post('/songs', {
+  addSong: async (songReqForm: SongReqForm, file:any) => axiosWithMul.post('/songs', {
     file,
     songReqForm
-  })
+  }),
+  // 更新歌手信息
+  updateSongMsg: async (id:number, songReqFore: SongReqForm)=> axiosWithJson.put('/songs', songReqFore),
+  updateSongImg: async (id:number, file:any) => axiosWithMul.put(`/songs/img/${id}`, {file}),
+  updateSongUrl: async (id:number, file:any) => axiosWithMul.put(`/songs/url/${id}`, {file}),
 }

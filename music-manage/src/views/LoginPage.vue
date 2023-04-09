@@ -2,7 +2,7 @@
   <div class="login-container">
     <div class="title">{{ platformName }}</div>
     <div class="login">
-        <el-form :model="loginForm" :rules="rules" label-width="22%" hide-required-asterisk>
+        <el-form :model="loginForm" :rules="<FormRules>rules" label-width="22%" hide-required-asterisk>
         <el-form-item prop="username" label="用户名">
           <el-input v-model="loginForm.username" placeholder="username"></el-input>
         </el-form-item>
@@ -21,6 +21,7 @@ import {useRouter} from "@/hooks/useRouter";
 import {HttpManager} from "@/api/request";
 import {useAdminStore} from "@/store/admin";
 import {LoginReqForm} from "@/api/type";
+import {FormRules} from "element-plus";
 const adminStore = useAdminStore();
 // 需要放在setup内，这样routerManager中才能获取到proxy
 const { routerManager } = useRouter();
