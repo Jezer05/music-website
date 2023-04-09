@@ -73,11 +73,10 @@
     >
     </el-pagination>
   </div>
-
 	<!-- 添加/修改歌手信息 -->
-  <el-dialog title="添加歌手" v-model="editVisible" :before-close="handleEditClose">
+  <el-dialog title="添加歌手" v-model="editVisible" destroy-on-close :before-close="handleEditClose">
     <el-form label-width="80px" :model="editForm" :rules="<FormRules>songRule">
-      <el-form-item label="歌曲名">
+      <el-form-item label="歌曲名" prop="name">
         <el-input v-model="editForm.name"></el-input>
       </el-form-item>
       <el-form-item label="简介">
@@ -87,7 +86,7 @@
         <el-input v-model="editForm.lyric"></el-input>
       </el-form-item>
       <el-form-item v-if="isAdd" label="歌曲上传">
-        <input type="file" name="file"  ref = "fileUpload" @change = 'beforeSongUpload(this)'/>
+        <input type="file" ref="upload"/>
       </el-form-item>
     </el-form>
     <template #footer>
@@ -120,7 +119,7 @@ const {routerManager} = useRouter();
 
 // 记录跳转的歌手id
 let singerId: any;
-singerId = ref(proxy!.$route.query.id);
+singerId = ref(proxy!.$route.query.singerId);
 
 //<editor-fold desc="数据展示">
 // 原始数组
@@ -165,10 +164,7 @@ function setSongUrl(row:any) {
 }
 //</editor-fold>
 
-
-
-
-
+// 跳转到评论界面
 function goCommentPage(id:number) {
   const breadcrumbList = reactive([
     {
@@ -178,7 +174,7 @@ function goCommentPage(id:number) {
     {
       path: RouterName.Song,
       query: {
-        id: singerId.value,
+        singerId: singerId.value,
       },
       name: "歌曲信息",
     },
@@ -188,14 +184,15 @@ function goCommentPage(id:number) {
     },
   ]);
   adminStore.setBreadcrumbList(breadcrumbList);
-  routerManager(RouterName.Comment, { path: RouterName.Comment, query: { id, type: 0 } });
+  routerManager(RouterName.Comment, { path: RouterName.Comment, query: { songId: id, type: 0 } });
 }
 
 // 处理当前页数
 function handleCurrentChange(val:number) {
   currentPage.value = val;
 }
-// 监听搜索框
+
+//<editor-fold desc="搜索框">
 const searchWord = ref("");
 watch(searchWord, () => {
   if (searchWord.value === "") {
@@ -210,13 +207,14 @@ watch(searchWord, () => {
     }
   }
 });
+//</editor-fold>
+
+//<editor-fold desc="编辑/添加表单">
 const editVisible = ref(false);
 // 标记现在是添加还是更新
 const isAdd = ref(true);
-/**
- * 添加
- */
-const fileUpload = ref();
+// 获得input file实例
+const upload = ref();
 const editForm : SongReqForm= reactive({
   name: "",
   singerId: singerId.value,
@@ -224,15 +222,28 @@ const editForm : SongReqForm= reactive({
   lyric: "",
 });
 const songRule = reactive({
-  name: [{ required: true, trigger: "change" }],
+  name: [{ required: true, message: "请输入歌曲名字", trigger: "change" }],
 });
 const clearEditForm = () => {
   editForm.name = "";
   editForm.introduction = "";
   editForm.lyric = "";
+  console.log(upload.value.files[0]);
   if (isAdd)
-    fileUpload.value = '';
+    upload.value = '';
 }
+const handleEditClose = (done: () => void) => {
+  ElMessageBox.confirm('你确定要关闭窗口吗，数据将不会保存！')
+      .then(() => {
+        clearEditForm();
+        done();
+      })
+      .catch(() => {
+        // catch error
+      })
+}
+//</editor-fold>
+
 async function addSong() {
   if (fileUpload.value == '') {
     ElMessage.error("歌曲资源不能为空")
@@ -253,9 +264,6 @@ async function addSong() {
   }
   getData();
 }
-/**
- * 编辑
- */
 function editRow(row:any) {
   editVisible.value = true;
   editForm.name = row.name;
@@ -263,16 +271,6 @@ function editRow(row:any) {
   editForm.lyric = row.lyric;
 }
 
-const handleEditClose = (done: () => void) => {
-  ElMessageBox.confirm('你确定要关闭窗口吗，数据将不会保存！')
-    .then(() => {
-      clearEditForm();
-      done();
-    })
-    .catch(() => {
-      // catch error
-    })
-}
 async function saveEdit(row:any) {
   if (editForm.name.trim() == '') {
     ElMessage.error("歌手姓名不能为空")
@@ -285,7 +283,7 @@ async function saveEdit(row:any) {
       type: result.type,
     });
     if (result.success) {
-      getData();
+      await getData();
       clearEditForm();
     }
     editVisible.value = false;
@@ -393,12 +391,14 @@ function deleteSelected() {
 .play {
     position: absolute;
     z-index: 100;
-    width: 60px;
-    height: 60px;
+    width: 80px;
+    height: 80px;
     top: 18px;
+    opacity: 0.5;
     left: 15px;
     display: flex;
     align-items: center;
+    background-size: cover;
     justify-content: center;
     cursor: pointer;
 }

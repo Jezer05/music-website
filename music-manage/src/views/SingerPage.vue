@@ -150,7 +150,7 @@ function goSongPage(id:number) {
   adminStore.setBreadcrumbList(breadcrumbList);
   routerManager(RouterName.Song, {
     path: RouterName.Song,
-    query: {id},
+    query: {singerId: id},
   });
 }
 // 监听搜索框

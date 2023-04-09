@@ -2,7 +2,7 @@ import {ComponentInternalInstance} from "vue";
 
 export function useUpload(){
   const uploadTypes = ref(["jpg", "jpeg", "png", "gif"]);
-  function beforeImgUpload(file:any, el?: HTMLInputElement) {
+  function beforeImgUpload(file:any) {
     const ltCode = 2;
     const isLt2M = file.size / 1024 / 1024 < ltCode;
     const isSupportedFileType = uploadTypes.value.includes(file.type.replace(/image\//, ""));
@@ -13,11 +13,9 @@ export function useUpload(){
     if (!isLt2M) {
       ElMessage.error(`上传头像图片大小不能超过 ${ltCode}MB!`);
     }
-    const res = isSupportedFileType && isLt2M
-    if (el != null && !res) el.value = ''
-    return res;
+    return isSupportedFileType && isLt2M;
   }
-  function beforeSongUpload(file : any, el?: HTMLInputElement) {
+  function beforeSongUpload(file : any) {
     const ltCode = 10;
     const isLt10M = file.size / 1024 / 1024 < ltCode;
     const songType = file.name.substring(file.name.lastIndexOf(".") + 1);
@@ -28,9 +26,7 @@ export function useUpload(){
     if (!isLt10M) {
       ElMessage.error(`上传头像图片大小不能超过 ${ltCode}MB!`);
     }
-    const res = isSupportedFileType && isLt10M;
-    if (el != null && !res) el.value = ''
-    return res;
+    return isSupportedFileType && isLt10M;
   }
   return {beforeImgUpload, beforeSongUpload}
 }
