@@ -1,30 +1,34 @@
 <template>
     <audio controls="controls" preload="auto"
-           v-if="url" :ref="player" :src="attachUrl(<string>url)"
+           v-if="url" ref="player" :src="attachUrl(<string>url)"
            @canplay="startPlay" @ended="ended"/>
 </template>
 
 <script setup lang="ts">
 import {usePlayerStore} from "@/store/player";
 import {attachUrl} from "@/utils";
+import {storeToRefs} from "pinia";
 
-const playStore = usePlayerStore();
-const divRef = ref<HTMLAudioElement>();
-const player = (el: any) => divRef.value = el;
-const url = ref(playStore.url);
-const isPlay = ref(playStore.isPlay);
+const playerStore = usePlayerStore();
+const player = ref<HTMLAudioElement>();
+
+const {url,isPlay} = storeToRefs(playerStore);
 watch(isPlay, () => togglePlay())
 function togglePlay() {
-  isPlay.value ? divRef.value!.play() : divRef.value!.pause();
+  isPlay.value ? player.value?.play() : player.value?.pause();
 }
 
 function startPlay() {
-  divRef.value!.play();
+  if (playerStore.isPlay == true)
+    player.value?.play();
 }
 // 音乐播放结束时触发
 function ended() {
-  playStore.pause();
+  playerStore.pause();
 }
+// playStore.$subscribe((args, state) => {
+//   isPlay.value = playStore.isPlay;
+// })
 </script>
 
 <style scoped>

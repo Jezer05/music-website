@@ -30,7 +30,9 @@
       <el-table-column label="地区" prop="location" width="100" align="center"></el-table-column>
       <el-table-column label="简介">
         <template v-slot="scope">
-          <p >{{ scope.row.introduction }}</p>
+          <el-scrollbar height="100px">
+            <p>{{ scope.row.introduction }}</p>
+          </el-scrollbar>
         </template>
       </el-table-column>
       <el-table-column label="歌曲管理" width="120" align="center">

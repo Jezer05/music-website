@@ -100,7 +100,7 @@ public class SongController {
     public Object getSongById(@PathVariable("id") Integer id){
         try{
             // 没有数据也是查询成功，只是data为null
-            return new SuccessResp("歌曲查询成功", songService.getSongById(id)).getMessage();
+            return new SuccessResp("歌曲查询成功", songService.getSongById(id));
         }catch (Exception e){
             throw new SystemException("系统繁忙，请稍后再试");
         }
@@ -109,7 +109,7 @@ public class SongController {
     @GetMapping("/singer/detail/{id}")
     public Object getSongBySingerId(@PathVariable("id") Integer singerId){
         try{
-            return new SuccessResp("歌曲查询成功",songService.getSongBySingerId(singerId)).getMessage();
+            return new SuccessResp("歌曲查询成功",songService.getSongBySingerId(singerId));
         }catch (Exception e){
             throw new SystemException("系统繁忙，请稍后再试");
         }

@@ -1,7 +1,7 @@
 <template>
   <el-breadcrumb class="crumbs" separator="/">
 <!--    面包屑导航栏-->
-    <el-breadcrumb-item v-for="item in breadcrumbList" :key="item.name" :to="{ path: item.path, query: item.query }">
+    <el-breadcrumb-item v-for="item in breadcrumbList" :key="item.name" :to="<string>{path: item.path , query: item.query}">
       {{ item.name }}
     </el-breadcrumb-item>
   </el-breadcrumb>
@@ -19,11 +19,9 @@
           <el-image :src="attachUrl(scope.row.pic)" style="width: 100%; height: 100px" fit="cover"/>
 <!--          播放按钮遮罩-->
           <div class="play" @click="setSongUrl(scope.row)">
-            <el-icon>
-              <svg class="icon" aria-hidden="true">
-                <use :xlink:href="toggle === scope.row.name ? playIcon : BOFANG"></use>
-              </svg>
-            </el-icon>
+            <svg class="icon" aria-hidden="true">
+              <use :xlink:href="(musicName === scope.row.name && isPlay) ? '#icon-zanting' : `#icon-bofang`"></use>
+            </svg>
           </div>
         </template>
       </el-table-column>
@@ -31,11 +29,13 @@
       <el-table-column label="简介" prop="introduction" width="120" align="center"/>
       <el-table-column label="歌词"  align="center">
         <template v-slot="scope">
-          <ul style="height: 100px; overflow: scroll">
-            <li v-for="(item, index) in parseLyric(scope.row.lyric)" :key="index">
-              {{ item }}
-            </li>
-          </ul>
+          <el-scrollbar height="100">
+            <ul>
+              <li v-for="(item, index) in parseLyric(scope.row.lyric)" :key="index">
+                {{ item }}
+              </li>
+            </ul>
+          </el-scrollbar>
         </template>
       </el-table-column>
       <el-table-column label="资源更新" width="100" align="center">
@@ -118,25 +118,21 @@ const {beforeImgUpload,beforeSongUpload} = useUpload();
 const {proxy} = getCurrentInstance() as ComponentInternalInstance;
 const {routerManager} = useRouter();
 
-// 跳转的歌手id
+// 记录跳转的歌手id
 let singerId: any;
 singerId = ref(proxy!.$route.query.id);
-// 所有歌手数据
+
+//<editor-fold desc="数据展示">
+// 原始数组
 let tableData = ref([]);
-// 页面展示数据
+// 搜索后数据
 let tempData = ref([]);
-// 页面数据容量
 const pageSize = ref(6);
-// 当前页
 const currentPage = ref(1);
 // 分页后数据
 const data = computed(() => {
   return tempData.value.slice((currentPage.value - 1) * pageSize.value, currentPage.value * pageSize.value);
 })
-const {breadcrumbList} = storeToRefs(adminStore)
-// 音乐播放状态
-const toggle = ref(false);
-const {isPlay} = storeToRefs(playerStore)
 // 挂载时读取数据
 onMounted(() => {
   getData()
@@ -147,9 +143,32 @@ async function getData() {
   const result = await HttpManager.getSongBySingerId(singerId.value);
   tableData.value = result.data;
   tempData.value = result.data;
-  console.log(data.value);
   currentPage.value = 1;
 }
+//</editor-fold>
+
+// 面包屑导航
+const {breadcrumbList} = storeToRefs(adminStore)
+
+//<editor-fold desc="音乐播放">
+// 正在播放的歌曲
+const musicName = ref('');
+const {isPlay} = storeToRefs(playerStore)
+function setSongUrl(row:any) {
+  if (row.url ===  playerStore.url)
+    playerStore.changeState();
+  else {
+    playerStore.setUrl(row.url);
+    playerStore.play();
+    musicName.value = row.name;
+  }
+}
+//</editor-fold>
+
+
+
+
+
 function goCommentPage(id:number) {
   const breadcrumbList = reactive([
     {
@@ -171,11 +190,7 @@ function goCommentPage(id:number) {
   adminStore.setBreadcrumbList(breadcrumbList);
   routerManager(RouterName.Comment, { path: RouterName.Comment, query: { id, type: 0 } });
 }
-function setSongUrl(row:any) {
-  playerStore.setUrl(row.url);
-  toggle.value = row.name;
-  isPlay.value ? playerStore.pause() : playerStore.play();
-}
+
 // 处理当前页数
 function handleCurrentChange(val:number) {
   currentPage.value = val;
@@ -378,8 +393,8 @@ function deleteSelected() {
 .play {
     position: absolute;
     z-index: 100;
-    width: 80px;
-    height: 80px;
+    width: 60px;
+    height: 60px;
     top: 18px;
     left: 15px;
     display: flex;

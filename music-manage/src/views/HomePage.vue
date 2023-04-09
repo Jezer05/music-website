@@ -1,18 +1,20 @@
 <template>
   <JezerAside/>
   <JezerHeader/>
-    <div class="content-box" :class="{ 'content-collapse': collapse }">
-      <router-view/>
-    </div>
+  <JezerAudio/>
+  <div class="content-box" :class="{ 'content-collapse': collapse }">
+    <router-view/>
+  </div>
 </template>
 
 <script lang="ts">
 import JezerAside from "@/components/JezerAside.vue";
 import JezerHeader from "@/components/JezerHeader.vue";
 import emitter from "@/utils/emitter.js";
+import JezerAudio from "@/components/JezerAudio.vue";
 export default defineComponent({
   name: "HomePage",
-  components: {JezerAside, JezerHeader},
+  components: {JezerAudio, JezerAside, JezerHeader},
   setup(){
     const collapse = ref(false);
     emitter.on("collapse", (msg) => {
