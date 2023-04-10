@@ -75,23 +75,23 @@
   </div>
 	<!-- 添加/修改歌手信息 -->
   <el-dialog title="添加歌手" v-model="editVisible" destroy-on-close :before-close="handleEditClose">
-    <el-form label-width="80px" :model="editForm" :rules="<FormRules>songRule">
+    <el-form id="add-song" label-width="80px" :model="editForm" :rules="<FormRules>rules">
       <el-form-item label="歌曲名" prop="name">
-        <el-input v-model="editForm.name"></el-input>
+        <el-input name="name" v-model="editForm.name"></el-input>
       </el-form-item>
       <el-form-item label="简介">
-        <el-input v-model="editForm.introduction"></el-input>
+        <el-input name="introduction" v-model="editForm.introduction"></el-input>
       </el-form-item>
       <el-form-item label="歌词">
-        <el-input v-model="editForm.lyric"></el-input>
+        <el-input type="textarea" name="lyric" v-model="editForm.lyric"></el-input>
       </el-form-item>
       <el-form-item v-if="isAdd" label="歌曲上传">
-        <input type="file" ref="upload"/>
+        <input type="file" name="file" ref="upload"/>
       </el-form-item>
     </el-form>
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="editVisible = false; clearEditForm()">取 消</el-button>
+        <el-button @click="editVisible = false">取 消</el-button>
         <el-button v-if="isAdd" type="primary" @click="addSong">确 定</el-button>
         <el-button v-else type="primary" @click="saveEdit">确 定</el-button>
       </span>
@@ -213,57 +213,53 @@ watch(searchWord, () => {
 const editVisible = ref(false);
 // 标记现在是添加还是更新
 const isAdd = ref(true);
-// 获得input file实例
-const upload = ref();
 const editForm : SongReqForm= reactive({
   name: "",
-  singerId: singerId.value,
   introduction: "",
   lyric: "",
 });
-const songRule = reactive({
+const rules = reactive({
   name: [{ required: true, message: "请输入歌曲名字", trigger: "change" }],
 });
-const clearEditForm = () => {
-  editForm.name = "";
-  editForm.introduction = "";
-  editForm.lyric = "";
-  console.log(upload.value.files[0]);
-  if (isAdd)
-    upload.value = '';
-}
 const handleEditClose = (done: () => void) => {
   ElMessageBox.confirm('你确定要关闭窗口吗，数据将不会保存！')
-      .then(() => {
-        clearEditForm();
-        done();
-      })
-      .catch(() => {
-        // catch error
-      })
+    .then(() => {
+      done();
+    })
+    .catch(() => {
+      // catch error
+    })
 }
 //</editor-fold>
 
+//<editor-fold desc="添加歌曲">
+// 获得input file实例
+const upload = ref();
 async function addSong() {
-  if (fileUpload.value == '') {
+  if (!upload.value.files[0]) {
     ElMessage.error("歌曲资源不能为空")
     return
   }
+  if (!beforeSongUpload(upload.value.files[0]))
+    return
   if (editForm.name.trim() == '') {
     ElMessage.error("歌曲名称不能为空")
     return
   }
-  const result = await HttpManager.addSong(editForm, fileUpload.files[0]);
+  const addSongForm = new FormData(document.getElementById("add-song") as HTMLFormElement);
+  addSongForm.append("singerId", singerId.value)
+  const result = await HttpManager.addSong(addSongForm);
   ElMessage({
     message: result.message,
     type: result.type,
   });
-  if (result.success) {
-    clearEditForm();
+  if (result.success)
     editVisible.value = false;
-  }
-  getData();
+  // await getData();
 }
+//</editor-fold>
+
+
 function editRow(row:any) {
   editVisible.value = true;
   editForm.name = row.name;

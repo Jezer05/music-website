@@ -84,48 +84,16 @@ public class SingerController {
             throw  new SystemException();
         }
     }
-
-    // 根据歌手id查找
-    //@GetMapping("/{id}")
-    //public Object getSingerById(@PathVariable Integer id){
-    //    try {
-    //        return new SuccessResp("查询成功", singerService.getSingerById(id)).getMessage();
-    //    }catch (Exception e){
-    //        throw new SystemException();
-    //    }
-    //}
-
-    // 根据歌手名查找
-    //@GetMapping("/name/detail")
-    //public Object getSingerByName(String name){
-    //    if (null == name)
-    //        return new ErrorResp("歌手名称不能为空").getMessage();
-    //    try {
-    //        return new SuccessResp("查询成功", singerService.getSingerByName(name)).getMessage();
-    //    }catch (Exception e){
-    //        throw new SystemException();
-    //    }
-    //}
-    // 根据歌手性别查找
-    //@GetMapping("/sex/detail/{sex}")
-    //public Object getSingerBySex(@PathVariable("sex") Integer sex){
-    //    if (sex != 0 && sex != 1)
-    //        return new ErrorResp("性别数据输入不合法").getMessage();
-    //    try {
-    //        return new SuccessResp("歌手查询成功", singerService.getSingerBySex(sex)).getMessage();
-    //    }catch (Exception e){
-    //        throw new SystemException();
-    //    }
-    //}
     // 更新歌手信息
-    @PutMapping()
-    public Object updateSinger(@RequestBody Singer singer){
+    @PutMapping("/{id}")
+    public Object updateSinger(@RequestBody Singer singer, @PathVariable Integer id){
+        singer.setId(id);
         try {
             boolean res = singerService.updateSinger(singer);
             if (res) {
-                return new SuccessResp("歌手信息更新成功").getMessage();
+                return new SuccessResp("歌手信息更新成功");
             } else {
-                return new ErrorResp("歌手信息更新失败").getMessage();
+                return new ErrorResp("歌手信息更新失败");
             }
         } catch (Exception e){
             throw  new SystemException();

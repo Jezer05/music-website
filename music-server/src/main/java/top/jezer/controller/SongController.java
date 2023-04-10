@@ -21,25 +21,15 @@ public class SongController {
     @Autowired
     private SongService songService;
     // 添加新歌曲
-    @PostMapping("/add")
-    public Object addSong(HttpServletRequest req, @RequestParam("file") MultipartFile file) {
-        String singer_id = req.getParameter("singerId");
-        String name = req.getParameter("name");
-        String introduction = req.getParameter("introduction");
-        String lyric = req.getParameter("lyric");
-        if (StringUtils.isBlank(singer_id))
-            return new ErrorResp("歌手id不能为空").getMessage();
-        if (StringUtils.isBlank(name))
-            return new ErrorResp("歌曲名称不能为空").getMessage();
-        else {
-            // 根据歌曲名称判断是否资源重复
-            name = name.trim();
-            try {
-                if (songService.getSongByNameEq(name) != null)
-                    return new ErrorResp("已存在同名歌曲").getMessage();
-            }catch (Exception e){
-                throw new SystemException();
-            }
+    @PostMapping
+    public Object addSong(Song song, @RequestParam("file") MultipartFile file) {
+        System.out.println(file.getOriginalFilename());
+        String name = song.getName().trim();
+        try {
+            if (songService.getSongByNameEq(name) != null)
+                return new ErrorResp("已存在同名歌曲");
+        }catch (Exception e){
+            throw new SystemException();
         }
         // 创建音乐资源路径
         String fileName = file.getOriginalFilename();
@@ -49,12 +39,6 @@ public class SongController {
             file1.mkdir();
         File dest = new File(filePath + System.getProperty("file.separator") + fileName);
         String storeUrlPath = "/song/" + fileName;
-        // 封装歌曲信息
-        Song song = new Song();
-        song.setSingerId(Integer.parseInt(singer_id.trim()));
-        song.setName(name.trim());
-        song.setIntroduction(introduction);
-        song.setLyric(lyric);
         // 设置默认歌曲图标
         song.setPic("/img/songPic/tubiao.jpg");
         song.setUrl(storeUrlPath);
@@ -62,9 +46,9 @@ public class SongController {
             file.transferTo(dest);
             boolean res = songService.addSong(song);
             if (res) {
-                return new SuccessResp("歌曲添加成功").getMessage();
+                return new SuccessResp("歌曲添加成功");
             } else {
-                return new ErrorResp("歌曲添加失败").getMessage();
+                return new ErrorResp("歌曲添加失败");
             }
         } catch (Exception e) {
             throw new SystemException("系统繁忙，请稍后再试");

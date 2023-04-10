@@ -13,7 +13,7 @@ export const HttpManager = {
   // 添加歌手
   addSinger: async (singerReqForm : SingerReqForm) => axiosWithJson.post('/singers',singerReqForm),
   // 更新歌手信息
-  updateSingerMsg: async (id: number, singerReqForm : SingerReqForm) => axiosWithJson.put(`/singers`,singerReqForm),
+  updateSingerMsg: async (id: number, singerReqForm : SingerReqForm) => axiosWithJson.put(`/singers/${id}`,singerReqForm),
   // 批量删除歌手
   deleteSingers: async (ids: Array<number>) => axiosWithJson.delete(`/singers`, {
     data: JSON.stringify(ids)
@@ -28,10 +28,7 @@ export const HttpManager = {
   // 根据歌手id查找歌曲
   getSongBySingerId: async (id:number) => axiosWithJson.get(`/songs/singer/detail/${id}`),
   // 为歌手添加歌曲
-  addSong: async (songReqForm: SongReqForm, file:any) => axiosWithMul.post('/songs', {
-    file,
-    songReqForm
-  }),
+  addSong: async (addSongForm: any) => axiosWithMul.post('/songs', addSongForm),
   // 更新歌手信息
   updateSongMsg: async (id:number, songReqFore: SongReqForm)=> axiosWithJson.put('/songs', songReqFore),
   updateSongImg: async (id:number, file:any) => axiosWithMul.put(`/songs/img/${id}`, {file}),

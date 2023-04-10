@@ -107,19 +107,21 @@ const adminStore = useAdminStore();
 
 const {routerManager} = useRouter();
 const {beforeImgUpload} = useUpload();
+
+//<editor-fold desc="数据展示">
 // 所有歌手数据
 let tableData = ref([]);
 // 页面展示数据
 let tempData = ref([]);
-// 页面数据容量
 const pageSize = ref(6);
-// 当前页
 const currentPage = ref(1);
-// 分页后数据
 const data = computed(() => {
   return tempData.value.slice((currentPage.value - 1) * pageSize.value, currentPage.value * pageSize.value);
 })
-// 挂载时读取数据
+// 处理当前页数
+function handleCurrentChange(val:number) {
+  currentPage.value = val;
+}
 onMounted(() => {
   getData()
 })
@@ -131,10 +133,24 @@ async function getData() {
   tempData.value = result.data;
   // currentPage.value = 1;
 }
-// 处理当前页数
-function handleCurrentChange(val:number) {
-  currentPage.value = val;
-}
+//</editor-fold>
+
+//<editor-fold desc="搜索">
+const searchWord = ref("");
+watch(searchWord, () => {
+  if (searchWord.value === "") {
+    tempData.value = tableData.value;
+  } else {
+    tempData.value = [];
+    for (let item of tableData.value) {
+      // @ts-ignore
+      if (item.name.includes(searchWord.value)) {
+        tempData.value.push(item);
+      }
+    }
+  }
+});
+//</editor-fold>
 // 跳转到歌曲页面
 function goSongPage(id:number) {
   const breadcrumbList = reactive([
@@ -153,20 +169,6 @@ function goSongPage(id:number) {
     query: {singerId: id},
   });
 }
-// 监听搜索框
-const searchWord = ref("");
-watch(searchWord, () => {
-  if (searchWord.value === "") {
-    tempData.value = tableData.value;
-  } else {
-    tempData.value = [];
-    for (let item of tableData.value) {
-      if (item.name.includes(searchWord.value)) {
-        tempData.value.push(item);
-      }
-    }
-  }
-});
 /**
  * 添加歌手
  */
@@ -233,6 +235,7 @@ async function saveEdit(row:any) {
     return
   }
   try {
+    console.log(row.id)
     const result = await HttpManager.updateSingerMsg(row.id, editForm);
     ElMessage({
       message: result.message,
@@ -319,6 +322,7 @@ function deleteSelected() {
     .then(async () => {
       let ids: Array<number> = [];
       for (let item of mulDelSelection.value){
+        // @ts-ignore
         ids.push(item.id);
       }
       const result = await HttpManager.deleteSingers(ids)
