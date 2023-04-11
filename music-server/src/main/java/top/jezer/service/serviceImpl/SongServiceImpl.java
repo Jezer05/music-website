@@ -14,59 +14,68 @@ import java.util.List;
 public class SongServiceImpl implements SongService {
     @Autowired
     private SongMapper songMapper;
+    //<editor-fold desc="增">
     @Override
     public boolean addSong(Song song) {
-        // 去除首尾空格，trim不适用于null
-        // 不进行Pic和URL的修改
-        String introduction = song.getIntroduction();
-        String lyric = song.getLyric();
-        if (null != introduction)
-            introduction = introduction.trim();
-        if (null != lyric)
-            lyric = lyric.trim();
-        song.setIntroduction(introduction);
-        song.setLyric(lyric);
+        song.setName(song.getName().trim());
+        song.setIntroduction(song.getIntroduction().trim());
+        song.setLyric(song.getLyric().trim());
         return songMapper.insert(song) > 0;
     }
+    //</editor-fold>
 
-    @Override
-    public boolean updateSong(Song song) {
-        // 去除首尾空格，trim不适用于null
-        // 不进行Pic和URL的修改
-        String name = song.getName();
-        String introduction = song.getIntroduction();
-        String lyric = song.getLyric();
-        // name为空串时，默认不修改名称
-        if (StringUtils.isBlank(name))
-            name = null;
-        else name = name.trim();
-        if (null != introduction)
-            introduction = introduction.trim();
-        if (null != lyric)
-            lyric = lyric.trim();
-        song.setName(name);
-        song.setIntroduction(introduction);
-        song.setLyric(lyric);
-        return songMapper.updateById(song) > 0;
-    }
-
+    //<editor-fold desc="删">
     @Override
     public boolean deleteSong(Integer id) {
         return songMapper.deleteById(id) > 0;
     }
 
     @Override
+    public boolean deleteSongs(List<Integer> ids) {
+        return songMapper.deleteBatchIds(ids) > 0;
+    }
+    //</editor-fold>
+
+    //<editor-fold desc="改">
+    @Override
+    public boolean updateSong(Song song) {
+        String name = song.getName();
+        String introduction = song.getIntroduction();
+        String lyric = song.getLyric();
+        // 更新头像和资源需要过滤null
+        if (null != name)
+            song.setName(name.trim());
+        if (null != introduction)
+            song.setIntroduction(introduction.trim());
+        if (null != lyric)
+            song.setLyric(lyric.trim());
+        return songMapper.updateById(song) > 0;
+    }
+    //</editor-fold>
+
+    //<editor-fold desc="查">
+    @Override
     public List<Song> getAllSong() {
         return songMapper.selectList(null);
     }
-
+    // 根据歌手id查找
     @Override
     public List<Song> getSongBySingerId(Integer singerId) {
         LambdaQueryWrapper<Song> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Song::getSingerId, singerId);
         return songMapper.selectList(wrapper);
     }
+    @Override
+    public Song getSongByNameEq(String name) {
+        if (StringUtils.isNotBlank(name))
+            name = name.trim();
+        LambdaQueryWrapper<Song> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Song::getName, name);
+        return songMapper.selectOne(wrapper);
+    }
+    //</editor-fold>
 
+    //<editor-fold desc="暂未使用">
     @Override
     public Song getSongById(Integer id) {
         return songMapper.selectById(id);
@@ -82,13 +91,8 @@ public class SongServiceImpl implements SongService {
         wrapper.like(Song::getName, name);
         return songMapper.selectList(wrapper);
     }
+    //</editor-fold>
 
-    @Override
-    public Song getSongByNameEq(String name) {
-        if (StringUtils.isNotBlank(name))
-            name = name.trim();
-        LambdaQueryWrapper<Song> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Song::getName, name);
-        return songMapper.selectOne(wrapper);
-    }
+
+
 }

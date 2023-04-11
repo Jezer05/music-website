@@ -114,12 +114,36 @@ import {FormRules} from "element-plus";
 const adminStore = useAdminStore();
 const playerStore = usePlayerStore();
 const {beforeImgUpload,beforeSongUpload} = useUpload();
+
+//<editor-fold desc="路由管理">
 const {proxy} = getCurrentInstance() as ComponentInternalInstance;
 const {routerManager} = useRouter();
-
-// 记录跳转的歌手id
 let singerId: any;
 singerId = ref(proxy!.$route.query.singerId);
+// 面包屑导航
+const {breadcrumbList} = storeToRefs(adminStore)
+function goCommentPage(id:number) {
+  const breadcrumbList = reactive([
+    {
+      path: RouterName.Singer,
+      name: "歌手管理",
+    },
+    {
+      path: RouterName.Song,
+      query: {
+        singerId: singerId.value,
+      },
+      name: "歌曲信息",
+    },
+    {
+      path: "",
+      name: "评论详情",
+    },
+  ]);
+  adminStore.setBreadcrumbList(breadcrumbList);
+  routerManager(RouterName.Comment, { path: RouterName.Comment, query: { songId: id, type: 0 } });
+}
+//</editor-fold>
 
 //<editor-fold desc="数据展示">
 // 原始数组
@@ -144,10 +168,11 @@ async function getData() {
   tempData.value = result.data;
   currentPage.value = 1;
 }
+// 处理当前页数
+function handleCurrentChange(val:number) {
+  currentPage.value = val;
+}
 //</editor-fold>
-
-// 面包屑导航
-const {breadcrumbList} = storeToRefs(adminStore)
 
 //<editor-fold desc="音乐播放">
 // 正在播放的歌曲
@@ -164,33 +189,6 @@ function setSongUrl(row:any) {
 }
 //</editor-fold>
 
-// 跳转到评论界面
-function goCommentPage(id:number) {
-  const breadcrumbList = reactive([
-    {
-      path: RouterName.Singer,
-      name: "歌手管理",
-    },
-    {
-      path: RouterName.Song,
-      query: {
-        singerId: singerId.value,
-      },
-      name: "歌曲信息",
-    },
-    {
-      path: "",
-      name: "评论详情",
-    },
-  ]);
-  adminStore.setBreadcrumbList(breadcrumbList);
-  routerManager(RouterName.Comment, { path: RouterName.Comment, query: { songId: id, type: 0 } });
-}
-
-// 处理当前页数
-function handleCurrentChange(val:number) {
-  currentPage.value = val;
-}
 
 //<editor-fold desc="搜索框">
 const searchWord = ref("");
@@ -259,28 +257,30 @@ async function addSong() {
 }
 //</editor-fold>
 
-
+//<editor-fold desc="编辑">
+const songId = ref(-1);
+//</editor-fold>
 function editRow(row:any) {
   editVisible.value = true;
+  songId.value = row.id
   editForm.name = row.name;
   editForm.introduction = row.introduction;
   editForm.lyric = row.lyric;
 }
 
-async function saveEdit(row:any) {
+async function saveEdit() {
   if (editForm.name.trim() == '') {
     ElMessage.error("歌手姓名不能为空")
     return
   }
   try {
-    const result = await HttpManager.updateSongMsg(row.id, editForm);
+    const result = await HttpManager.updateSongMsg(songId.value, editForm);
     ElMessage({
       message: result.message,
       type: result.type,
     });
     if (result.success) {
       await getData();
-      clearEditForm();
     }
     editVisible.value = false;
   } catch (error) {

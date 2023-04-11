@@ -1,23 +1,15 @@
 package top.jezer.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import top.jezer.common.ErrorResp;
 import top.jezer.common.SuccessResp;
-import top.jezer.constant.ResourceLocation;
 import top.jezer.domain.Singer;
-import top.jezer.exception.BusinessException;
 import top.jezer.exception.SystemException;
 import top.jezer.service.serviceImpl.SingerServiceImpl;
+import top.jezer.utils.FileUtils;
 
-import java.io.File;
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -25,6 +17,8 @@ import java.util.List;
 public class SingerController {
     @Autowired
     private SingerServiceImpl singerService;
+
+    //<editor-fold desc="增">
     // 添加歌手
     @PostMapping
     public Object addSinger(@RequestBody Singer singer){
@@ -48,16 +42,17 @@ public class SingerController {
             throw  new SystemException();
         }
     }
+    //</editor-fold>
+
+    //<editor-fold desc="删">
     // 删除歌手
     @DeleteMapping("/{id}")
     public Object deleteSinger(@PathVariable Integer id){
-        //if (null == singerService.getSingerById(id))
-        //    return new ErrorResp("查询不到对应歌手");
         try {
             boolean res = singerService.deleteSinger(id);
             if (res)
                 return new SuccessResp("歌手删除成功");
-            else return new ErrorResp("歌手删除失败");
+            else return new ErrorResp("未找到对应歌手信息，请刷新后再试");
         }catch (Exception e){
             throw new SystemException();
         }
@@ -65,25 +60,18 @@ public class SingerController {
     // 批量删除歌手
     @DeleteMapping
     public Object deleteSingers(@RequestBody List<Integer> ids){
-        System.out.println(ids);
         try {
             boolean res = singerService.deleteSingers(ids);
             if (res)
                 return new SuccessResp("歌手删除成功");
-            else return new ErrorResp("歌手删除失败");
+            else return new ErrorResp("未找到对应歌手信息，请刷新后再试");
         }catch (Exception e){
             throw new SystemException();
         }
     }
-    // 返回所有歌手
-    @GetMapping
-    public Object getAllSinger(){
-        try {
-            return new SuccessResp("歌手查询成功", singerService.getAllSinger());
-        }catch (Exception e){
-            throw  new SystemException();
-        }
-    }
+    //</editor-fold>
+
+    //<editor-fold desc="改">
     // 更新歌手信息
     @PutMapping("/{id}")
     public Object updateSinger(@RequestBody Singer singer, @PathVariable Integer id){
@@ -93,7 +81,7 @@ public class SingerController {
             if (res) {
                 return new SuccessResp("歌手信息更新成功");
             } else {
-                return new ErrorResp("歌手信息更新失败");
+                return new ErrorResp("未找到对应歌手信息，请刷新后再试");
             }
         } catch (Exception e){
             throw  new SystemException();
@@ -102,27 +90,34 @@ public class SingerController {
     // 更新歌手头像
     @PutMapping("/avatar/{id}")
     public Object updateSingerPic(@RequestParam("file") MultipartFile avatarFile, @PathVariable("id") Integer id) {
-        String fileName = System.currentTimeMillis() + avatarFile.getOriginalFilename();
-        String filePath = System.getProperty("user.dir") + ResourceLocation.ASSETS_PATH + "/img/singerPic";
-        File file1 = new File(filePath);
-        if (!file1.exists()) {
-            file1.mkdir();
-        }
-        File dest = new File(filePath + System.getProperty("file.separator") + fileName);
-        String imgPath = "/img/singerPic/" + fileName;
+        String imgPath = FileUtils.uploadFile(avatarFile, 1);
+        Singer singer = new Singer();
+        singer.setId(id);
+        singer.setPic(imgPath);
         try {
-            avatarFile.transferTo(dest);
-            Singer singer = new Singer();
-            singer.setId(id);
-            singer.setPic(imgPath);
             boolean res = singerService.updateSinger(singer);
             if (res) {
                 return new SuccessResp("上传成功", imgPath);
             } else {
-                return new ErrorResp("上传失败");
+                return new ErrorResp("未找到对应歌手信息，请刷新后再试");
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             return new SystemException();
         }
     }
+    //</editor-fold>
+
+    //<editor-fold desc="查">
+    // 返回所有歌手
+    @GetMapping
+    public Object getAllSinger(){
+        try {
+            return new SuccessResp("歌手查询成功", singerService.getAllSinger());
+        }catch (Exception e){
+            throw  new SystemException();
+        }
+    }
+    //</editor-fold>
+
+
 }

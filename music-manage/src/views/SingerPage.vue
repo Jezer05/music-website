@@ -12,7 +12,7 @@
         <template v-slot="scope">
           <el-image :src="attachUrl(scope.row.pic)" style="width: 100%; height: 100px" fit="cover"/>
           <el-upload :show-file-list="false"  :on-success="handleImgSuccess" :on-error="handleImgError" :before-upload="beforeImgUpload" :http-request="updateAvatar">
-            <el-button @click="handleAvatarId(scope.row.id)">更新图片</el-button>
+            <el-button @click="handleSingerId(scope.row.id)">更新图片</el-button>
           </el-upload>
         </template>
       </el-table-column>
@@ -61,8 +61,8 @@
   </div>
 
 	<!-- 添加/修改歌手信息 -->
-  <el-dialog title="添加歌手" v-model="editVisible" :before-close="handleEditClose">
-    <el-form label-width="80px" :model="editForm" :rules="<FormRules>singerRules">
+  <el-dialog title="添加歌手" destroy-on-close v-model="editVisible" :before-close="handleEditClose">
+    <el-form label-width="80px" :model="editForm" :rules="<FormRules>rules">
       <el-form-item label="歌手名" prop="name">
         <el-input v-model="editForm.name"></el-input>
       </el-form-item>
@@ -86,7 +86,7 @@
     </el-form>
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="editVisible = false; clearEditForm()">取 消</el-button>
+        <el-button @click="editVisible = false">取 消</el-button>
         <el-button v-if="isAdd" type="primary" @click="addSinger">确 定</el-button>
         <el-button v-else type="primary" @click="saveEdit">确 定</el-button>
       </span>
@@ -103,10 +103,7 @@ import {RouterName} from "@/enums";
 import {useAdminStore} from "@/store/admin";
 import {attachUrl, parseBirth, parseSex} from "@/utils";
 import {FormRules} from "element-plus";
-const adminStore = useAdminStore();
 
-const {routerManager} = useRouter();
-const {beforeImgUpload} = useUpload();
 
 //<editor-fold desc="数据展示">
 // 所有歌手数据
@@ -131,7 +128,7 @@ async function getData() {
   const result = await HttpManager.getAllSinger();
   tableData.value = result.data;
   tempData.value = result.data;
-  // currentPage.value = 1;
+  currentPage.value = 1;
 }
 //</editor-fold>
 
@@ -151,7 +148,10 @@ watch(searchWord, () => {
   }
 });
 //</editor-fold>
-// 跳转到歌曲页面
+
+//<editor-fold desc="路由跳转">
+const adminStore = useAdminStore();
+const {routerManager} = useRouter();
 function goSongPage(id:number) {
   const breadcrumbList = reactive([
     {
@@ -169,9 +169,9 @@ function goSongPage(id:number) {
     query: {singerId: id},
   });
 }
-/**
- * 添加歌手
- */
+//</editor-fold>
+
+//<editor-fold desc="添加/编辑表单">
 const editVisible = ref(false);
 // 标记现在是添加歌手还是更新歌手
 const isAdd = ref(true);
@@ -182,16 +182,21 @@ const editForm : SingerReqForm= reactive({
   location: "",
   introduction: "",
 });
-const singerRules = reactive({
+const rules = reactive({
   name: [{ required: true, trigger: "change", message: "姓名不能为空"}],
 });
-const clearEditForm = () => {
-  editForm.name = "";
-  editForm.sex = 3;
-  editForm.birth = new Date();
-  editForm.location = "";
-  editForm.introduction = "";
+const handleEditClose = (done: () => void) => {
+  ElMessageBox.confirm('你确定要关闭此窗口吗？数据将不会被保存')
+      .then(() => {
+        done();
+      })
+      .catch(() => {
+        // catch error
+      })
 }
+//</editor-fold>
+
+// 添加
 async function addSinger() {
   if (editForm.name.trim() == '') {
     ElMessage.error("歌手姓名不能为空")
@@ -203,83 +208,73 @@ async function addSinger() {
     type: result.type,
   });
   if (result.success) {
-    clearEditForm();
     editVisible.value = false;
   }
   await getData();
 }
-/**
- * 编辑
- */
+
+//<editor-fold desc="编辑">
+const singerId = ref(-1);
 function editRow(row:any) {
   editVisible.value = true;
+  singerId.value = row.id
   editForm.name = row.name;
   editForm.sex = row.sex;
   editForm.birth = row.birth;
   editForm.location = row.location;
   editForm.introduction = row.introduction;
 }
-const handleEditClose = (done: () => void) => {
-  ElMessageBox.confirm('Are you sure to close this dialog?')
-    .then(() => {
-      clearEditForm();
-      done();
-    })
-    .catch(() => {
-      // catch error
-    })
-}
-async function saveEdit(row:any) {
+async function saveEdit() {
   if (editForm.name.trim() == '') {
     ElMessage.error("歌手姓名不能为空")
     return
   }
   try {
-    console.log(row.id)
-    const result = await HttpManager.updateSingerMsg(row.id, editForm);
+    const result = await HttpManager.updateSingerMsg(singerId.value, editForm);
     ElMessage({
       message: result.message,
       type: result.type,
     });
     if (result.success) {
       await getData();
-      clearEditForm();
     }
     editVisible.value = false;
   } catch (error) {
     console.error(error);
   }
 }
-// 更新头像
-let avatarId = ref(-1);
-function handleAvatarId(id: number){
-  avatarId.value = id
+//</editor-fold>
+
+//<editor-fold desc="头像更新">
+const {beforeImgUpload} = useUpload();
+function handleSingerId(id: number){
+  singerId.value = id
 }
 function updateAvatar(options : any) {
-  return HttpManager.updateSingerAvatar(avatarId.value, options.file);
+  return HttpManager.updateSingerAvatar(singerId.value, options.file);
 }
-function handleImgSuccess(response:any, file:any) {
+function handleImgSuccess(response:any) {
   ElMessage({
     message: response.message,
     type: response.type,
   });
   if (response.success) getData();
 }
-function handleImgError(response:any, file:any) {
+function handleImgError(response:any) {
   ElMessage({
     message: response.message,
     type: response.type,
   });
   if (response.success) getData();
 }
-/**
- * 删除
- */
+//</editor-fold>
+
+//<editor-fold desc="删除">
 let mulDelSelection = ref([]); // 记录当前要删除的列表
 function deleteRow(id:number) {
   ElMessageBox.confirm(
     `确定要删除ID为${id}的歌手？`,
-    'Warning',
+    '警告',
     {
       confirmButtonText: 'OK',
       cancelButtonText: 'Cancel',
@@ -311,37 +306,39 @@ function deleteSelected() {
     return
   }
   ElMessageBox.confirm(
-    `确定要删除所选的${count}歌手吗？`,
-    '警告',
-    {
-      confirmButtonText: 'OK',
-      cancelButtonText: 'Cancel',
-      type: 'warning',
-    }
-  )
-    .then(async () => {
-      let ids: Array<number> = [];
-      for (let item of mulDelSelection.value){
-        // @ts-ignore
-        ids.push(item.id);
-      }
-      const result = await HttpManager.deleteSingers(ids)
-      if (result.success) {
-        await getData();
-        mulDelSelection.value = [];
-      }
-      ElMessage({
-        type: result.type,
-        message: result.message,
-      })
-    })
-    .catch(() => {
-      ElMessage({
+      `确定要删除所选的${count}歌手吗？`,
+      '警告',
+      {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
         type: 'warning',
-        message: '删除操作已经取消',
+      }
+  )
+      .then(async () => {
+        let ids: Array<number> = [];
+        for (let item of mulDelSelection.value){
+          // @ts-ignore
+          ids.push(item.id);
+        }
+        const result = await HttpManager.deleteSingers(ids)
+        await getData();
+        if (result.success) {
+          mulDelSelection.value = [];
+        }
+        ElMessage({
+          type: result.type,
+          message: result.message,
+        })
       })
-    })
+      .catch(() => {
+        ElMessage({
+          type: 'warning',
+          message: '删除操作已经取消',
+        })
+      })
 }
+//</editor-fold>
+
 
 </script>
 
