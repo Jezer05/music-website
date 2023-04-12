@@ -6,8 +6,8 @@
       <el-button type="primary" @click="editVisible = true;isAdd = true">添加歌手</el-button>
     </div>
     <el-table border size="small" :data="data" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="40" align="center"></el-table-column>
-      <el-table-column label="ID" prop="id" width="50" align="center"></el-table-column>
+      <el-table-column type="selection" width="40" align="center"/>
+      <el-table-column label="ID" prop="id" width="50" align="center"/>
       <el-table-column label="歌手图片" width="110" align="center">
         <template v-slot="scope">
           <el-image :src="attachUrl(scope.row.pic)" style="width: 100%; height: 100px" fit="cover"/>
@@ -16,7 +16,7 @@
           </el-upload>
         </template>
       </el-table-column>
-      <el-table-column label="歌手" prop="name" width="120" align="center"></el-table-column>
+      <el-table-column label="歌手" prop="name" width="120" align="center"/>
       <el-table-column label="性别" width="60" align="center">
         <template v-slot="scope">
           <div>{{ parseSex(scope.row.sex) }}</div>
@@ -27,7 +27,7 @@
           <div>{{ parseBirth(scope.row.birth) }}</div>
         </template>
       </el-table-column>
-      <el-table-column label="地区" prop="location" width="100" align="center"></el-table-column>
+      <el-table-column label="地区" prop="location" width="100" align="center"/>
       <el-table-column label="简介">
         <template v-slot="scope">
           <el-scrollbar height="100px">
@@ -61,12 +61,12 @@
   </div>
 
 	<!-- 添加/修改歌手信息 -->
-  <el-dialog title="添加歌手" destroy-on-close v-model="editVisible" :before-close="handleEditClose">
+  <el-dialog title="添加歌手" v-model="editVisible" :before-close="handleEditClose">
     <el-form label-width="80px" :model="editForm" :rules="<FormRules>rules">
       <el-form-item label="歌手名" prop="name">
-        <el-input v-model="editForm.name"></el-input>
+        <el-input v-model="editForm.name"/>
       </el-form-item>
-      <el-form-item label="性别" prop="sex">
+      <el-form-item label="性别">
         <el-radio-group v-model="editForm.sex">
           <el-radio :label="0">女</el-radio>
           <el-radio :label="1">男</el-radio>
@@ -75,13 +75,14 @@
         </el-radio-group>
       </el-form-item>
       <el-form-item label="故乡">
-        <el-input v-model="editForm.location"></el-input>
+        <el-input v-model="editForm.location"/>
       </el-form-item>
+<!--        这里会爆警告 scroll-blocking 'touchstart' event-->
       <el-form-item label="出生日期">
-        <el-date-picker type="date" v-model="editForm.birth"></el-date-picker>
+        <el-date-picker type="date" v-model="editForm.birth"/>
       </el-form-item>
       <el-form-item label="歌手介绍">
-        <el-input type="textarea" v-model="editForm.introduction"></el-input>
+        <el-input type="textarea" v-model="editForm.introduction"/>
       </el-form-item>
     </el-form>
     <template #footer>
@@ -164,8 +165,8 @@ function goSongPage(id:number) {
     },
   ]);
   adminStore.setBreadcrumbList(breadcrumbList);
-  routerManager(RouterName.Song, {
-    path: RouterName.Song,
+  routerManager(RouterName.SongDetail, {
+    path: RouterName.SongDetail,
     query: {singerId: id},
   });
 }
@@ -183,8 +184,19 @@ const editForm : SingerReqForm= reactive({
   introduction: "",
 });
 const rules = reactive({
-  name: [{ required: true, trigger: "change", message: "姓名不能为空"}],
+  name: [{ required: true, trigger: "blur", message: "姓名不能为空"}],
 });
+const clearForm = () => {
+  editForm.name = ''
+  editForm.sex = 3
+  editForm.birth = new Date()
+  editForm.location = ''
+  editForm.introduction = ''
+}
+watch(editVisible, async (newVal) =>{
+  if (newVal == false)
+    clearForm();
+})
 const handleEditClose = (done: () => void) => {
   ElMessageBox.confirm('你确定要关闭此窗口吗？数据将不会被保存')
       .then(() => {
@@ -196,7 +208,7 @@ const handleEditClose = (done: () => void) => {
 }
 //</editor-fold>
 
-// 添加
+//<editor-fold desc="添加">
 async function addSinger() {
   if (editForm.name.trim() == '') {
     ElMessage.error("歌手姓名不能为空")
@@ -212,6 +224,7 @@ async function addSinger() {
   }
   await getData();
 }
+//</editor-fold>
 
 //<editor-fold desc="编辑">
 const singerId = ref(-1);
@@ -306,7 +319,7 @@ function deleteSelected() {
     return
   }
   ElMessageBox.confirm(
-      `确定要删除所选的${count}歌手吗？`,
+      `确定要删除所选的${count}位歌手吗？`,
       '警告',
       {
         confirmButtonText: 'OK',

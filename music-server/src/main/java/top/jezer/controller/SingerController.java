@@ -90,7 +90,7 @@ public class SingerController {
     // 更新歌手头像
     @PutMapping("/avatar/{id}")
     public Object updateSingerPic(@RequestParam("file") MultipartFile avatarFile, @PathVariable("id") Integer id) {
-        String imgPath = FileUtils.uploadFile(avatarFile, 1);
+        String imgPath = FileUtils.uploadFile(avatarFile, 1, "/img/singerPic");
         Singer singer = new Singer();
         singer.setId(id);
         singer.setPic(imgPath);

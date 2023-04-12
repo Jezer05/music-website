@@ -10,21 +10,21 @@ import java.io.IOException;
 public class FileUtils {
     /**
      *
-     * @param file
+     * @param file: 文件
      * @param flag: 用来标记以何种模式命名:1—时间戳
-     * @return
+     * @param prefix: 文件前缀
      */
-    public static  String uploadFile(MultipartFile file, Integer flag){
+    public static  String uploadFile(MultipartFile file, Integer flag, String prefix){
         String fileName;
         if (flag == 1)
             fileName = System.currentTimeMillis() + file.getOriginalFilename();
         else fileName = file.getOriginalFilename();
-        String filePath = System.getProperty("user.dir") + ResourceLocation.ASSETS_PATH + "/song";
+        String filePath = System.getProperty("user.dir") + ResourceLocation.ASSETS_PATH + prefix;
         File file1 = new File(filePath);
         if (!file1.exists())
             file1.mkdir();
         File dest = new File(filePath + System.getProperty("file.separator") + fileName);
-        String storeUrlPath = "/song/" + fileName;
+        String storeUrlPath = prefix + System.getProperty("file.separator") + fileName;
         try {
             file.transferTo(dest);
         } catch (IOException e) {

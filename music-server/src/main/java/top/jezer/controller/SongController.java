@@ -37,7 +37,7 @@ public class SongController {
             throw new SystemException();
         }
         // 创建音乐资源路径
-        String storeUrlPath = FileUtils.uploadFile(file, 0);
+        String storeUrlPath = FileUtils.uploadFile(file, 0, "/song");
         // 设置默认歌曲图标
         song.setPic("/img/songPic/tubiao.jpg");
         song.setUrl(storeUrlPath);
@@ -83,7 +83,7 @@ public class SongController {
     //</editor-fold>
 
     //<editor-fold desc="改">
-// 更新歌曲信息
+    // 更新歌曲信息
     @PutMapping("/{id}")
     public Object updateSongMsg(@RequestBody Song song, @PathVariable Integer id) {
         song.setId(id);
@@ -102,7 +102,7 @@ public class SongController {
     @PutMapping("/img/{id}")
     public Object updateSongPic(@RequestParam("file") MultipartFile file, @PathVariable("id") Integer id) {
         // TODO 删除旧图片
-        String storeUrlPath = FileUtils.uploadFile(file, 1);
+        String storeUrlPath = FileUtils.uploadFile(file, 1, "/img/songPic");
         Song song = new Song();
         song.setId(id);
         song.setPic(storeUrlPath);
@@ -123,7 +123,7 @@ public class SongController {
     @PutMapping("/url/{id}")
     public Object updateSongUrl(@RequestParam("file") MultipartFile file, @PathVariable("id") Integer id) {
         // TODO 删除旧资源 先检查，再上传
-        String storeUrlPath = FileUtils.uploadFile(file, 0);
+        String storeUrlPath = FileUtils.uploadFile(file, 0, "/song");
         Song song = new Song();
         song.setId(id);
         song.setUrl(storeUrlPath);

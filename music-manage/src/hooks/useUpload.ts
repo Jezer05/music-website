@@ -1,7 +1,7 @@
 import {ComponentInternalInstance} from "vue";
 
 export function useUpload(){
-  const uploadTypes = ref(["jpg", "jpeg", "png", "gif"]);
+  const uploadTypes = ref(["jpg", "jpeg", "png", "gif", "webp"]);
   function beforeImgUpload(file:any) {
     const ltCode = 2;
     const isLt2M = file.size / 1024 / 1024 < ltCode;

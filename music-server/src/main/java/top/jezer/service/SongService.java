@@ -13,6 +13,8 @@ public interface SongService {
     boolean updateSong(Song song);
     // 删除歌曲
     boolean deleteSong(Integer id);
+    // 批量删除歌手
+    boolean deleteSongs(List<Integer> ids);
     // 获取所有歌曲
     List<Song> getAllSong();
     // 根据歌手Id查找歌曲
@@ -23,4 +25,5 @@ public interface SongService {
     List<Song> getSongByName(String name);
     // 根据歌曲名精确匹配
     Song getSongByNameEq(String name);
+
 }

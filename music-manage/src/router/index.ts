@@ -17,7 +17,6 @@ const routes: Array<RouteRecordRaw> = [
     path: '/',
     component: () => import('@/views/HomePage.vue'),
     meta: {
-      title: '自述文件',
       requireAuth: true,
     },
     children: [
@@ -33,15 +32,23 @@ const routes: Array<RouteRecordRaw> = [
         path: '/singer',
         component: () => import('@/views/SingerPage.vue'),
         meta: {
-          title: 'Singer',
+          title: '歌手',
           requireAuth: true,
         }
       },
       {
-        path: '/song',
-        component: () => import('@/views/SongPage.vue'),
+        path: '/songDetail',
+        component: () => import('@/views/SongDetail.vue'),
         meta: {
-          title: 'Song',
+          title: '歌曲详情',
+          requireAuth: true,
+        }
+      },
+      {
+        path: '/commentDetail',
+        component: () => import('@/views/CommentDetail.vue'),
+        meta: {
+          title: '评论详情',
           requireAuth: true,
         }
       },
@@ -55,11 +62,7 @@ const routes: Array<RouteRecordRaw> = [
       //     component: () => import('@/views/ListSongPage.vue'),
       //     meta: { title: 'ListSong' }
       // },
-      // {
-      //     path: '/Comment',
-      //     component: () => import('@/views/CommentPage.vue'),
-      //     meta: { title: 'Comment' }
-      // },
+
       // {
       //     path: '/Consumer',
       //     component: () => import('@/views/ConsumerPage.vue'),

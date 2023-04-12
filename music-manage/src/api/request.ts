@@ -39,4 +39,20 @@ export const HttpManager = {
   }),
 //</editor-fold>
 
+  //<editor-fold desc="评论板块">
+  // 根据歌曲Id查询评论
+  getCommentBySongId: async (id: number) =>
+      axiosWithJson.get(`/comments/song/detail/${id}`),
+  // 根据歌单Id查询评论
+  getCommentBySongListId: async (id:number) =>
+      axiosWithJson.get(`/comments/songList/detail/${id}`),
+  // 删除评论
+  deleteComment: async (id:number) =>
+      axiosWithJson.delete(`/comments/${id}`),
+  deleteComments: async (ids: Array<number>)=>
+      axiosWithJson.delete("/comments", {
+        data: JSON.stringify(ids)
+      })
+  //</editor-fold>
+
 }

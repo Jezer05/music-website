@@ -65,6 +65,7 @@
     <el-pagination
       class="pagination"
       background
+      hide-on-single-page
       layout="total, prev, pager, next"
       :current-page="currentPage"
       :page-size="pageSize"
@@ -73,19 +74,19 @@
     >
     </el-pagination>
   </div>
-	<!-- 添加/修改歌手信息 -->
-  <el-dialog title="添加歌手" v-model="editVisible" destroy-on-close :before-close="handleEditClose">
+	<!-- 添加/修改歌曲信息 -->
+  <el-dialog title="添加歌曲" v-model="editVisible" :before-close="handleEditClose">
     <el-form id="add-song" label-width="80px" :model="editForm" :rules="<FormRules>rules">
       <el-form-item label="歌曲名" prop="name">
-        <el-input name="name" v-model="editForm.name"></el-input>
+        <el-input name="name" v-model="editForm.name"/>
       </el-form-item>
       <el-form-item label="简介">
-        <el-input name="introduction" v-model="editForm.introduction"></el-input>
+        <el-input name="introduction" v-model="editForm.introduction"/>
       </el-form-item>
       <el-form-item label="歌词">
-        <el-input type="textarea" name="lyric" v-model="editForm.lyric"></el-input>
+        <el-input type="textarea" name="lyric" v-model="editForm.lyric"/>
       </el-form-item>
-      <el-form-item v-if="isAdd" label="歌曲上传">
+      <el-form-item v-if="isAdd && editVisible" label="歌曲上传">
         <input type="file" name="file" ref="upload"/>
       </el-form-item>
     </el-form>
@@ -116,10 +117,7 @@ const playerStore = usePlayerStore();
 const {beforeImgUpload,beforeSongUpload} = useUpload();
 
 //<editor-fold desc="路由管理">
-const {proxy} = getCurrentInstance() as ComponentInternalInstance;
 const {routerManager} = useRouter();
-let singerId: any;
-singerId = ref(proxy!.$route.query.singerId);
 // 面包屑导航
 const {breadcrumbList} = storeToRefs(adminStore)
 function goCommentPage(id:number) {
@@ -129,7 +127,7 @@ function goCommentPage(id:number) {
       name: "歌手管理",
     },
     {
-      path: RouterName.Song,
+      path: RouterName.SongDetail,
       query: {
         singerId: singerId.value,
       },
@@ -141,11 +139,14 @@ function goCommentPage(id:number) {
     },
   ]);
   adminStore.setBreadcrumbList(breadcrumbList);
-  routerManager(RouterName.Comment, { path: RouterName.Comment, query: { songId: id, type: 0 } });
+  // type用来表示歌曲还是歌单
+  routerManager(RouterName.CommentDetail, { path: RouterName.CommentDetail, query: { id, type: 0 } });
 }
 //</editor-fold>
 
 //<editor-fold desc="数据展示">
+const {proxy} = getCurrentInstance() as ComponentInternalInstance;
+const singerId : any = ref(proxy!.$route.query.singerId);
 // 原始数组
 let tableData = ref([]);
 // 搜索后数据
@@ -217,7 +218,7 @@ const editForm : SongReqForm= reactive({
   lyric: "",
 });
 const rules = reactive({
-  name: [{ required: true, message: "请输入歌曲名字", trigger: "change" }],
+  name: [{ required: true, message: "请输入歌曲名字", trigger: "blur" }],
 });
 const handleEditClose = (done: () => void) => {
   ElMessageBox.confirm('你确定要关闭窗口吗，数据将不会保存！')
@@ -228,6 +229,15 @@ const handleEditClose = (done: () => void) => {
       // catch error
     })
 }
+const clearForm = () => {
+  editForm.name = '';
+  editForm.introduction = '';
+  editForm.lyric = '';
+}
+watch(editVisible, async (newVal) => {
+  if (newVal == false)
+    clearForm();
+})
 //</editor-fold>
 
 //<editor-fold desc="添加歌曲">
@@ -253,13 +263,12 @@ async function addSong() {
   });
   if (result.success)
     editVisible.value = false;
-  // await getData();
+  await getData();
 }
 //</editor-fold>
 
 //<editor-fold desc="编辑">
 const songId = ref(-1);
-//</editor-fold>
 function editRow(row:any) {
   editVisible.value = true;
   songId.value = row.id
@@ -288,33 +297,32 @@ async function saveEdit() {
   }
 }
 // 更新资源
-let avatarId = ref(-1);
 function handleSongId(id: number){
-  avatarId.value = id
+  songId.value = id
 }
 function updateUrl(options : any) {
-  return HttpManager.updateSongUrl(avatarId.value, options.file);
+  return HttpManager.updateSongUrl(songId.value, options.file);
 }
 function updateImg(options : any) {
-  return HttpManager.updateSongImg(avatarId.value, options.file);
+  return HttpManager.updateSongImg(songId.value, options.file);
 }
-function handleResourceSuccess(response:any, file:any) {
+function handleResourceSuccess(response:any) {
   ElMessage({
     message: response.message,
     type: response.type,
   });
   if (response.success) getData();
 }
-function handleResourceError(response:any, file:any) {
+function handleResourceError(response:any) {
   ElMessage({
     message: response.message,
     type: response.type,
   });
   if (response.success) getData();
 }
-/**
- * 删除
- */
+//</editor-fold>
+
+//<editor-fold desc="删除">
 let mulDelSelection = ref([]); // 记录当前要删除的列表
 function deleteRow(id:number) {
   ElMessageBox.confirm(
@@ -327,7 +335,7 @@ function deleteRow(id:number) {
       }
   )
       .then(async () => {
-        const result = await HttpManager.deleteSinger(id)
+        const result = await HttpManager.deleteSong(id)
         await getData();
         ElMessage({
           type: result.type,
@@ -351,7 +359,7 @@ function deleteSelected() {
     return
   }
   ElMessageBox.confirm(
-      `确定要删除所选的${count}歌手吗？`,
+      `确定要删除所选的${count}首歌曲吗？`,
       '警告',
       {
         confirmButtonText: 'OK',
@@ -362,9 +370,10 @@ function deleteSelected() {
       .then(async () => {
         let ids: Array<number> = [];
         for (let item of mulDelSelection.value){
+          // @ts-ignore
           ids.push(item.id);
         }
-        const result = await HttpManager.deleteSingers(ids)
+        const result = await HttpManager.deleteSongs(ids)
         if (result.success) {
           await getData();
           mulDelSelection.value = [];
@@ -381,6 +390,8 @@ function deleteSelected() {
         })
       })
 }
+//</editor-fold>
+
 </script>
 
 <style scoped>

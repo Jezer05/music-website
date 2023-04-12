@@ -15,6 +15,7 @@ import java.util.List;
 public class SingerServiceImpl implements SingerService {
     @Autowired
     private SingerMapper singerMapper;
+    //<editor-fold desc="增">
     @Override
     public boolean addSinger(Singer singer) {
         // 只可能传递字符串或者空串
@@ -24,6 +25,21 @@ public class SingerServiceImpl implements SingerService {
         singer.setIntroduction(singer.getIntroduction().trim());
         return singerMapper.insert(singer) > 0;
     }
+    //</editor-fold>
+
+    //<editor-fold desc="删">
+    @Override
+    public boolean deleteSinger(Integer id) {
+        return singerMapper.deleteById(id) > 0;
+    }
+
+    @Override
+    public boolean deleteSingers(List<Integer> ids) {
+        return singerMapper.deleteBatchIds(ids) > 0;
+    }
+    //</editor-fold>
+
+    //<editor-fold desc="改">
     @Override
     public boolean updateSinger(Singer singer) {
         String name = singer.getName();
@@ -38,23 +54,23 @@ public class SingerServiceImpl implements SingerService {
             singer.setIntroduction(introduction.trim());
         return singerMapper.updateById(singer) > 0;
     }
+    //</editor-fold>
 
-    @Override
-    public boolean deleteSinger(Integer id) {
-        return singerMapper.deleteById(id) > 0;
-    }
-
-    @Override
-    public boolean deleteSingers(List<Integer> ids) {
-        return singerMapper.deleteBatchIds(ids) > 0;
-    }
-
-
+    //<editor-fold desc="查">
     @Override
     public List<Singer> getAllSinger() {
         return singerMapper.selectList(null);
     }
 
+    @Override
+    public Singer getSingerByNameEq(String name) {
+        LambdaQueryWrapper<Singer> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Singer::getName, name);
+        return singerMapper.selectOne(wrapper);
+    }
+    //</editor-fold>
+
+    //<editor-fold desc="暂未使用">
     @Override
     public Singer getSingerById(Integer id) {
         return singerMapper.selectById(id);
@@ -72,16 +88,14 @@ public class SingerServiceImpl implements SingerService {
     }
 
     @Override
-    public Singer getSingerByNameEq(String name) {
-        LambdaQueryWrapper<Singer> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Singer::getName, name);
-        return singerMapper.selectOne(wrapper);
-    }
-
-    @Override
     public List<Singer> getSingerBySex(Integer sex) {
         LambdaQueryWrapper<Singer> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Singer::getSex, sex);
         return singerMapper.selectList(wrapper);
     }
+    //</editor-fold>
+
+
+
+
 }
