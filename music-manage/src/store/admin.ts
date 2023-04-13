@@ -36,5 +36,7 @@ export const useAdminStore = defineStore({
       this.breadcrumbList = breadcrumbList
     }
   },
-  persist: true,
+  persist: {
+    paths: ["id", "username", "password", "token", "isLogin"]
+  },
 })

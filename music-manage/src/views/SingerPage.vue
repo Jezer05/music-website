@@ -51,10 +51,11 @@
     <el-pagination
       class="pagination"
       background
+      hide-on-single-page
       layout="total, prev, pager, next"
       :current-page="currentPage"
       :page-size="pageSize"
-      :total="tableData.length"
+      :total="tempData.length"
       @current-change="handleCurrentChange"
     >
     </el-pagination>

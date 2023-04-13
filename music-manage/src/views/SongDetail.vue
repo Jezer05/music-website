@@ -1,7 +1,7 @@
 <template>
   <el-breadcrumb class="crumbs" separator="/">
 <!--    面包屑导航栏-->
-    <el-breadcrumb-item v-for="item in breadcrumbList" :key="item.name" :to="<string>{path: item.path , query: item.query}">
+    <el-breadcrumb-item v-for="(item, index) in breadcrumbList" :key="item.name" :to="<string>{path: item.path , query: item.query}">
       {{ item.name }}
     </el-breadcrumb-item>
   </el-breadcrumb>
@@ -69,7 +69,7 @@
       layout="total, prev, pager, next"
       :current-page="currentPage"
       :page-size="pageSize"
-      :total="tableData.length"
+      :total="tempData.length"
       @current-change="handleCurrentChange"
     >
     </el-pagination>
@@ -408,5 +408,9 @@ function deleteSelected() {
     background-size: cover;
     justify-content: center;
     cursor: pointer;
+}
+.icon {
+    width: 80px;
+    height: 80px;
 }
 </style>
