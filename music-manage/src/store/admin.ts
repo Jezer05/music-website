@@ -37,6 +37,6 @@ export const useAdminStore = defineStore({
     }
   },
   persist: {
-    paths: ["id", "username", "password", "token", "isLogin"]
+    paths: ["id", "username", "password", "token", "avatar", "isLogin"]
   },
 })

@@ -52,6 +52,14 @@ const routes: Array<RouteRecordRaw> = [
           requireAuth: true,
         }
       },
+      {
+        path: '/consumer',
+        component: () => import('@/views/ConsumerPage.vue'),
+        meta: {
+          title: '用户管理',
+          requireAuth: true,
+        }
+      },
       // {
       //     path: '/SongList',
       //     component: () => import('@/views/SongListPage.vue'),
@@ -63,11 +71,7 @@ const routes: Array<RouteRecordRaw> = [
       //     meta: { title: 'ListSong' }
       // },
 
-      // {
-      //     path: '/Consumer',
-      //     component: () => import('@/views/ConsumerPage.vue'),
-      //     meta: { title: 'Consumer' }
-      // },
+
       // {
       //     path: '/Collect',
       //     component: () => import('@/views/CollectPage.vue'),
