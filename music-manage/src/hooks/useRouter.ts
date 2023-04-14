@@ -16,7 +16,7 @@ export  function useRouter(){
       case RouterName.ListSong:
       case RouterName.CommentDetail:
       case RouterName.Consumer:
-      case RouterName.Collect:
+      case RouterName.CollectDetail:
         proxy?.$router.push({ path: options.path, query: options.query });
         break;
       case RouterName.Song:
@@ -26,6 +26,7 @@ export  function useRouter(){
       case RouterName.Info:
       case RouterName.Singer:
       case RouterName.Comment:
+      case RouterName.Collect:
       case RouterName.SongList:
       case RouterName.Error:
       default:

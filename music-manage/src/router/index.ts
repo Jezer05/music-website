@@ -60,6 +60,14 @@ const routes: Array<RouteRecordRaw> = [
           requireAuth: true,
         }
       },
+      {
+        path: '/collectDetail',
+        component: () => import('@/views/CollectDetail.vue'),
+        meta: {
+          title: '收藏歌曲',
+          requireAuth: true,
+        }
+      },
       // {
       //     path: '/SongList',
       //     component: () => import('@/views/SongListPage.vue'),
@@ -72,11 +80,7 @@ const routes: Array<RouteRecordRaw> = [
       // },
 
 
-      // {
-      //     path: '/Collect',
-      //     component: () => import('@/views/CollectPage.vue'),
-      //     meta: { title: 'Collect' }
-      // }
+
     ]
   }
 ]

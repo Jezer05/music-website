@@ -40,14 +40,14 @@
         </el-icon>
         <span>歌单管理</span>
       </el-menu-item>
-      <el-menu-item index="song">
-        <el-icon>
-          <svg class="icon" aria-hidden="true">
-            <use xlink:href="#icon-gequ"></use>
-          </svg>
-        </el-icon>
-        <span>歌曲管理</span>
-      </el-menu-item>
+<!--      <el-menu-item index="song">-->
+<!--        <el-icon>-->
+<!--          <svg class="icon" aria-hidden="true">-->
+<!--            <use xlink:href="#icon-gequ"></use>-->
+<!--          </svg>-->
+<!--        </el-icon>-->
+<!--        <span>歌曲管理</span>-->
+<!--      </el-menu-item>-->
     </el-menu>
   </div>
 </template>

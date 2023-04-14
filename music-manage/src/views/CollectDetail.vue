@@ -1,45 +1,34 @@
 <template>
+  <el-breadcrumb class="crumbs" separator="/">
+    <el-breadcrumb-item v-for="item in breadcrumbList" :key="item.name" :to="<string>{ path: item.path, query: item.query }">
+      {{ item.name }}
+    </el-breadcrumb-item>
+  </el-breadcrumb>
   <div class="container">
     <div class="handle-box">
       <el-button @click="deleteSelected">批量删除</el-button>
-      <el-input placeholder="筛选用户" v-model="searchWord"></el-input>
+      <el-input placeholder="筛选内容" v-model="searchWord"></el-input>
     </div>
-      <el-table border size="small" :data="data" @selection-change="handleSelectionChange" stripe>
+    <el-table border size="small" :data="data" @selection-change="handleSelectionChange" stripe>
         <el-table-column type="selection" width="40" align="center"/>
         <el-table-column label="ID" prop="id" width="50" align="center"/>
-        <el-table-column label="用户头像" width="102" align="center">
+        <el-table-column label="封面" width="110" align="center">
           <template v-slot="scope">
-            <el-image :src="attachUrl(scope.row.avatar)" style="width: 100%; height: 100px" fit="cover" />
+            <el-image :src="attachUrl(scope.row.pic)" style="width: 100%; height: 100px" fit="cover"/>
           </template>
         </el-table-column>
-        <el-table-column label="用户名" prop="username" width="80" align="center"/>
-        <el-table-column label="性别" width="50" align="center">
-          <template v-slot="scope">
-            <div>{{ parseSex(scope.row.sex) }}</div>
-          </template>
+        <el-table-column prop="name" label="歌曲/歌单"/>
+        <el-table-column label="类型" width="80" align="center">
+            <p v-if="type == 1">歌单</p>
+            <p v-else>歌曲</p>
         </el-table-column>
-        <el-table-column label="手机号码" prop="phoneNum" width="120" align="center"/>
-        <el-table-column label="邮箱" prop="email" width="120" align="center"/>
-        <el-table-column label="生日" width="120" align="center">
-          <template v-slot="scope">
-            <div>{{ parseBirth(scope.row.birth) }}</div>
-          </template>
-        </el-table-column>
-        <el-table-column label="签名" prop="introduction"/>
-        <el-table-column label="地区" prop="location" width="70" align="center"/>
-        <el-table-column label="收藏" width="90" align="center">
-          <template v-slot="scope">
-            <el-button @click="goCollectPage(scope.row.id)">收藏列表</el-button>
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" width="90" align="center">
+        <el-table-column label="操作" width="100" align="center">
           <template v-slot="scope">
             <el-button type="danger" @click="deleteRow(scope.row.id)">删除</el-button>
           </template>
         </el-table-column>
-      </el-table>
+    </el-table>
   </div>
-
   <!--    页脚导航-->
   <el-pagination
     class="pagination"
@@ -51,23 +40,33 @@
     :total="tempData.length"
     @current-change="handleCurrentChange"
   >
-  </el-pagination>
+  </el-pagination>`
 </template>
 
 <script setup lang="ts">
-import {attachUrl, parseBirth, parseSex} from "@/utils";
-import {useRouter} from "@/hooks/useRouter";
-import {HttpManager} from "@/api/request";
+import {attachUrl} from "@/utils";
 import {useAdminStore} from "@/store/admin";
-import {RouterName} from "@/enums";
+import {storeToRefs} from "pinia";
+import {ComponentInternalInstance} from "vue";
+import {HttpManager} from "@/api/request";
+
+//<editor-fold desc="路由导航">
+const adminStore = useAdminStore();
+const {breadcrumbList} = storeToRefs(adminStore);
+//</editor-fold>
 
 //<editor-fold desc="数据展示">
+const {proxy} = getCurrentInstance() as ComponentInternalInstance;
+// 保存用户id
+const userId : any= ref(proxy!.$route.query.userId);
+// 标记收藏的是歌曲还是歌单
+const type : any = ref(proxy?.$route.query.type);
 // 原始数组
 let tableData = ref([]);
 // 搜索后数据
 let tempData = ref([]);
 // 分页
-const pageSize = ref(8)
+const pageSize = ref(6)
 const currentPage = ref(1);
 // 分页后数据
 const data = computed(() => {
@@ -77,7 +76,10 @@ const data = computed(() => {
 async function getData() {
   tableData.value = [];
   tempData.value = [];
-  const result = await HttpManager.getAllConsumer();
+  let result;
+  if (type.value == 0)
+    result = await HttpManager.getCollectSongByUserId(userId.value);
+  else result = await HttpManager.getCollectListByUserId(userId.value);
   tableData.value = result.data;
   tempData.value = result.data;
   currentPage.value = 1;
@@ -93,7 +95,7 @@ onMounted(() => {
 })
 //</editor-fold>
 
-//<editor-fold desc="搜索">
+//<editor-fold desc="搜索框">
 const searchWord = ref("");
 watch(searchWord, () => {
   if (searchWord.value === "") {
@@ -101,8 +103,8 @@ watch(searchWord, () => {
   } else {
     tempData.value = [];
     for (let item of tableData.value) {
-      // @ts-ignore
-      if (item.username.includes(searchWord.value)) {
+      //@ts-ignore
+      if (item.name.includes(searchWord.value)) {
         tempData.value.push(item);
       }
     }
@@ -110,35 +112,12 @@ watch(searchWord, () => {
 });
 //</editor-fold>
 
-//<editor-fold desc="路由跳转">
-const adminStore = useAdminStore();
-const {routerManager} = useRouter();
-function goCollectPage(id:number) {
-  const breadcrumbList = reactive([
-      // TODO: 面包屑导航
-    {
-      path: RouterName.Consumer,
-      name: "用户管理",
-    },
-    {
-      path: "",
-      name: "收藏歌曲",
-    },
-  ]);
-  adminStore.setBreadcrumbList(breadcrumbList);
-  routerManager(RouterName.SongDetail, {
-    path: RouterName.CollectDetail,
-    query: {userId: id, type: 0},
-  });
-}
-//</editor-fold>
-
 //<editor-fold desc="删除">
 let mulDelSelection = ref([]); // 记录当前要删除的列表
 function deleteRow(id:number) {
   ElMessageBox.confirm(
-      `确定要删除ID为${id}的用户吗？`,
-      '警告',
+      `确定要删除ID为${id}的收藏吗？`,
+      'Warning',
       {
         confirmButtonText: 'OK',
         cancelButtonText: 'Cancel',
@@ -146,7 +125,7 @@ function deleteRow(id:number) {
       }
   )
       .then(async () => {
-        const result = await HttpManager.deleteConsumer(id)
+        const result = await HttpManager.deleteCollect(id)
         await getData();
         ElMessage({
           type: result.type,
@@ -165,12 +144,12 @@ function handleSelectionChange(val: any) {
 }
 function deleteSelected() {
   const count = mulDelSelection.value.length;
-  if (count <= 0){
-    ElMessage.warning("请先选择需要删除的用户")
+  if (count <= 0) {
+    ElMessage.warning("请先选择需要删除的内容")
     return
   }
   ElMessageBox.confirm(
-      `确定要删除所选的${count}位用户吗？`,
+      `确定要删除所选的${count}条内容吗？`,
       '警告',
       {
         confirmButtonText: 'OK',
@@ -180,13 +159,13 @@ function deleteSelected() {
   )
       .then(async () => {
         let ids: Array<number> = [];
-        for (let item of mulDelSelection.value){
+        for (let item of mulDelSelection.value) {
           // @ts-ignore
           ids.push(item.id);
         }
-        const result = await HttpManager.deleteConsumers(ids)
-        await getData();
+        const result = await HttpManager.deleteCollects(ids)
         if (result.success) {
+          await getData();
           mulDelSelection.value = [];
         }
         ElMessage({

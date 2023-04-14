@@ -52,7 +52,33 @@ export const HttpManager = {
   deleteComments: async (ids: Array<number>)=>
       axiosWithJson.delete("/comments", {
         data: JSON.stringify(ids)
-      })
+      }),
+  //</editor-fold>
+
+  //<editor-fold desc="用户板块">
+  getAllConsumer: async () =>
+      axiosWithJson.get('/consumers'),
+  deleteConsumer: async (id:number) =>
+      axiosWithJson.delete(`/consumers/${id}`),
+  deleteConsumers: async (ids: Array<number>)=>
+      axiosWithJson.delete('/consumers', {
+        data: JSON.stringify(ids)
+      }),
+  //</editor-fold>
+
+  //<editor-fold desc="收藏板块">
+  // 获得用户的收藏歌曲
+  getCollectSongByUserId: async (id: number) =>
+      axiosWithJson.get(`/collects/song/user/${id}`),
+  getCollectListByUserId: async (id:number) =>
+      axiosWithJson.get(`/collects/songList/user/${id}`),
+  // 删除评论
+  deleteCollect: async (id:number) =>
+      axiosWithJson.delete((`/collects/${id}`)),
+  deleteCollects: async (ids:Array<number>)=>
+      axiosWithJson.delete('/collects', {
+        data: JSON.stringify(ids)
+      }),
   //</editor-fold>
 
 }
