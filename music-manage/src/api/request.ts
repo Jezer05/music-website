@@ -1,4 +1,4 @@
-import {LoginReqForm, SingerReqForm, SongReqForm} from "@/api/type";
+import {LoginReqForm, SingerReqForm, SongListReqForm, SongReqForm} from "@/api/type";
 import {axiosWithJson, axiosWithMul} from "@/api/index";
 // 获得不同类型的header
 
@@ -81,4 +81,24 @@ export const HttpManager = {
       }),
   //</editor-fold>
 
+  //<editor-fold desc="歌单板块">
+  // 查询所有
+  getAllSongList: async ()=>
+      axiosWithJson.get("/songLists"),
+  // 删除歌单
+  deleteSongList: async (id:number) =>
+      axiosWithJson.delete(`/songLists/${id}`),
+  deleteSongLists: async (ids: Array<number>)=>
+      axiosWithJson.delete(("/songLists"), {
+        data: JSON.stringify(ids)
+      }),
+  // 添加歌单
+  addSongList: async (songList: SongListReqForm) =>
+      axiosWithJson.post(`/songLists`, songList),
+  // 更新信息
+  updateSongListMsg: async (id: number, songList:SongListReqForm)=>
+      axiosWithJson.put(`/songLists/${id}`,songList),
+  updateSongListImg: async (id:number, file:any)=>
+      axiosWithMul.put(`/songLists/img/${id}`, {file})
+  //</editor-fold>
 }

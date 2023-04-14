@@ -68,16 +68,22 @@ const routes: Array<RouteRecordRaw> = [
           requireAuth: true,
         }
       },
-      // {
-      //     path: '/SongList',
-      //     component: () => import('@/views/SongListPage.vue'),
-      //     meta: { title: 'SongList' }
-      // },
-      // {
-      //     path: '/ListSong',
-      //     component: () => import('@/views/ListSongPage.vue'),
-      //     meta: { title: 'ListSong' }
-      // },
+      {
+          path: '/songList',
+          component: () => import('@/views/SongListPage.vue'),
+          meta: {
+            title: '歌单信息',
+            requireAuth: true
+          }
+      },
+      {
+          path: '/ListSong',
+          component: () => import('@/views/ListSong.vue'),
+          meta: {
+            title: 'ListSong' ,
+            requireAuth: true,
+          }
+      },
 
 
 

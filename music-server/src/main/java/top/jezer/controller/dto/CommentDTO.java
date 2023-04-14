@@ -8,7 +8,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CommentDTO {
-    private Integer Id;
+    private Integer id;
     private String username;
+    private String avatar;
     private String content;
+    private Integer mark;
 }

@@ -51,7 +51,7 @@
       </el-table-column>
       <el-table-column label="评论" width="90" align="center">
         <template v-slot="scope">
-          <el-button @click="goCommentPage(scope.row.id)">评论</el-button>
+          <el-button @click="goCommentDetial(scope.row.id)">评论</el-button>
         </template>
       </el-table-column>
       <el-table-column label="操作" width="160" align="center">
@@ -120,7 +120,7 @@ const {beforeImgUpload,beforeSongUpload} = useUpload();
 const {routerManager} = useRouter();
 // 面包屑导航
 const {breadcrumbList} = storeToRefs(adminStore)
-function goCommentPage(id:number) {
+function goCommentDetial(id:number) {
   const breadcrumbList = reactive([
     {
       path: RouterName.Singer,

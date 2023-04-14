@@ -20,10 +20,20 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public List<CommentDTO> getCommentBySongId(Integer songId) {
         MPJLambdaWrapper<Comment> wrapper = new MPJLambdaWrapper<Comment>()
-                .select(Comment::getId, Comment::getContent)
-                .select(Consumer::getUsername)
+                .select(Comment::getId, Comment::getContent, Comment::getMark)
+                .select(Consumer::getUsername, Consumer::getAvatar)
                 .leftJoin(Consumer.class, Consumer::getId, Comment::getUserId)
                 .eq(Comment::getType, 0).eq(Comment::getSongId, songId);
+        return commentMapper.selectJoinList(CommentDTO.class, wrapper);
+    }
+
+    @Override
+    public List<CommentDTO> getCommentBySongListId(Integer songListId) {
+        MPJLambdaWrapper<Comment> wrapper = new MPJLambdaWrapper<Comment>()
+                .select(Comment::getId, Comment::getContent, Comment::getMark)
+                .select(Consumer::getUsername, Consumer::getAvatar)
+                .leftJoin(Consumer.class, Consumer::getId, Comment::getUserId)
+                .eq(Comment::getType, 1).eq(Comment::getSongListId, songListId);
         return commentMapper.selectJoinList(CommentDTO.class, wrapper);
     }
 

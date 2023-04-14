@@ -62,5 +62,16 @@ public class CommentController {
             throw new SystemException();
         }
     }
+    // 根据歌单Id返回评论
+    @GetMapping("/songList/detail/{id}")
+    public Object getCommentBySongListId(@PathVariable("id") Integer songListId){
+        try {
+           List<CommentDTO> res = commentService.getCommentBySongListId(songListId);
+           if (res != null) return new SuccessResp("查询成功",res);
+           else return new ErrorResp("未找到对应评论");
+        }catch (Exception e){
+            throw new SystemException();
+        }
+    }
     //</editor-fold>
 }

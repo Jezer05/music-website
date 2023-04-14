@@ -9,7 +9,7 @@
   <div class="container">
       <div class="handle-box">
           <el-button @click="deleteSelected">批量删除</el-button>
-          <el-input placeholder="筛选歌曲" v-model="searchWord"></el-input>
+          <el-input placeholder="筛选评论" v-model="searchWord"></el-input>
       </div>
       <el-table border size="small" :data="data" @selection-change="handleSelectionChange" stripe>
           <el-table-column type="selection" width="40" align="center"/>

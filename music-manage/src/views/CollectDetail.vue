@@ -19,7 +19,7 @@
         </el-table-column>
         <el-table-column prop="name" label="歌曲/歌单"/>
         <el-table-column label="类型" width="80" align="center">
-            <p v-if="type == 1">歌单</p>
+            <p v-if="type === 1">歌单</p>
             <p v-else>歌曲</p>
         </el-table-column>
         <el-table-column label="操作" width="100" align="center">

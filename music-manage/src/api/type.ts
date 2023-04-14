@@ -16,3 +16,9 @@ export interface SongReqForm{
   introduction: string,
   lyric: string,
 }
+
+export interface SongListReqForm{
+  title: string,
+  introduction: string,
+  style: string,
+}
