@@ -40,7 +40,7 @@
     :total="tempData.length"
     @current-change="handleCurrentChange"
   >
-  </el-pagination>`
+  </el-pagination>
 </template>
 
 <script setup lang="ts">

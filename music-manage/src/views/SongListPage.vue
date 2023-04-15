@@ -19,12 +19,12 @@
             <el-table-column prop="title" label="标题" width="200"/>
             <el-table-column label="简介">
                 <template v-slot="scope">
-                    <el-scrollbar height="100px">
+                    <el-scrollbar max-height="100px">
                         <p>{{ scope.row.introduction }}</p>
                     </el-scrollbar>
                 </template>
             </el-table-column>
-            <el-table-column label="风格" prop="style" width="100"/>
+            <el-table-column label="风格" prop="style" width="100"  align="center"/>
             <el-table-column label="内容" width="90" align="center">
                 <template v-slot="scope">
                     <el-button @click="goListSong(scope.row.id)">内容</el-button>
@@ -62,7 +62,7 @@
               <el-input v-model="editForm.title"/>
           </el-form-item>
           <el-form-item label="歌单介绍">
-              <el-input v-model="editForm.introduction"/>
+              <el-input v-model="editForm.introduction" type="textarea" :autosize = "{ minRows: 2, maxRows: 8 }"/>
           </el-form-item>
           <!--        这里会爆警告 scroll-blocking 'touchstart' event-->
           <el-form-item label="风格">

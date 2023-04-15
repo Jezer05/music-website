@@ -29,7 +29,7 @@
       <el-table-column label="简介" prop="introduction" width="120" align="center"/>
       <el-table-column label="歌词"  align="center">
         <template v-slot="scope">
-          <el-scrollbar height="100">
+          <el-scrollbar max-height="100">
             <ul>
               <li v-for="(item, index) in parseLyric(scope.row.lyric)" :key="index">
                 {{ item }}
@@ -84,7 +84,7 @@
         <el-input name="introduction" v-model="editForm.introduction"/>
       </el-form-item>
       <el-form-item label="歌词">
-        <el-input type="textarea" name="lyric" v-model="editForm.lyric"/>
+        <el-input type="textarea" name="lyric" v-model="editForm.lyric" :autosize = "{ minRows: 2, maxRows: 8 }"/>
       </el-form-item>
       <el-form-item v-if="isAdd && editVisible" label="歌曲上传">
         <input type="file" name="file" ref="upload"/>

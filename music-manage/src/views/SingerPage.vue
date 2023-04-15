@@ -28,10 +28,10 @@
         </template>
       </el-table-column>
       <el-table-column label="地区" prop="location" width="100" align="center"/>
-      <el-table-column label="简介">
+      <el-table-column label="简介" align="center">
         <template v-slot="scope">
-          <el-scrollbar height="100px">
-            <p>{{ scope.row.introduction }}</p>
+          <el-scrollbar max-height="140px">
+            <p >{{ scope.row.introduction }}</p>
           </el-scrollbar>
         </template>
       </el-table-column>
@@ -78,12 +78,12 @@
       <el-form-item label="故乡">
         <el-input v-model="editForm.location"/>
       </el-form-item>
-<!--        这里会爆警告 scroll-blocking 'touchstart' event-->
+<!--        这里有时会爆警告 scroll-blocking 'touchstart' event-->
       <el-form-item label="出生日期">
         <el-date-picker type="date" v-model="editForm.birth"/>
       </el-form-item>
       <el-form-item label="歌手介绍">
-        <el-input type="textarea" v-model="editForm.introduction"/>
+        <el-input type="textarea" v-model="editForm.introduction" :autosize = "{ minRows: 2, maxRows: 8 }"/>
       </el-form-item>
     </el-form>
     <template #footer>

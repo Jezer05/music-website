@@ -7,7 +7,7 @@
       <el-table border size="small" :data="data" @selection-change="handleSelectionChange" stripe>
         <el-table-column type="selection" width="40" align="center"/>
         <el-table-column label="ID" prop="id" width="50" align="center"/>
-        <el-table-column label="用户头像" width="102" align="center">
+        <el-table-column label="用户头像" width="110" align="center">
           <template v-slot="scope">
             <el-image :src="attachUrl(scope.row.avatar)" style="width: 100%; height: 100px" fit="cover" />
           </template>
@@ -27,7 +27,7 @@
         </el-table-column>
         <el-table-column label="签名" prop="introduction"/>
         <el-table-column label="地区" prop="location" width="70" align="center"/>
-        <el-table-column label="收藏" width="90" align="center">
+        <el-table-column label="收藏" width="120" align="center">
           <template v-slot="scope">
             <el-button @click="goCollectPage(scope.row.id)">收藏列表</el-button>
           </template>
