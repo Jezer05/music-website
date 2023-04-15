@@ -5,10 +5,12 @@ import org.springframework.web.bind.annotation.*;
 import top.jezer.common.ErrorResp;
 import top.jezer.common.SuccessResp;
 import top.jezer.controller.dto.ListSongDTO;
+import top.jezer.domain.ListSong;
 import top.jezer.domain.Song;
 import top.jezer.exception.SystemException;
 import top.jezer.service.serviceImpl.ListSongServiceImpl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -17,7 +19,23 @@ public class ListSongController {
     @Autowired
     private ListSongServiceImpl listSongService;
     //<editor-fold desc="增">
-
+    @PostMapping("/{songListId}")
+    private Object addSongsIntoList(@RequestBody List<Integer> songIds, @PathVariable Integer songListId){
+        List<ListSong> listSongs = new ArrayList<>();
+        for (Integer songId : songIds){
+            ListSong tmp = new ListSong();
+            tmp.setSongId(songId);
+            tmp.setSongListId(songListId);
+            listSongs.add(tmp);
+        }
+        try {
+            boolean res = listSongService.addSongsIntoList(listSongs);
+            if (res) return new SuccessResp("添加成功");
+            else return new ErrorResp("添加失败");
+        }catch (Exception e){
+            throw new SystemException();
+        }
+    }
     //</editor-fold>
 
     //<editor-fold desc="删">

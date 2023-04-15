@@ -36,4 +36,13 @@ public class ListSongServiceImpl implements ListSongService {
     public boolean deleteListSongs(List<Integer> ids) {
         return listSongMapper.deleteBatchIds(ids) > 0;
     }
+
+    @Override
+    public boolean addSongsIntoList(List<ListSong> list) {
+        int count = 0;
+        for (ListSong item: list) {
+            count += listSongMapper.insert(item);
+        }
+        return count > 0;
+    }
 }

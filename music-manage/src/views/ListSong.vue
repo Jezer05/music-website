@@ -46,27 +46,33 @@
         >
         </el-pagination>
     </div>
-    <el-dialog title="添加歌曲" v-model="dialogVisible" >
-        <el-select v-model="selectRes"
-                   placeholder="请选择歌曲"
-                   filterable
-                   collapse-tags
-                   collapse-tags-tooltip
-                   fit-input-width
-        >
-            <el-option
-                v-for="item in selectedList"
-                :key="item.songId"
-                :label="item.songName"
-                :value="item.songId"
-                :disabled="item.disabled"
-            />
-        </el-select>
+    <el-dialog title="添加歌曲" v-model="dialogVisible" center width="25%" align-center>
+        <el-form>
+            <el-form-item label="歌曲选择">
+                <el-select v-model="selectRes"
+                           placeholder="请选择歌曲"
+                           filterable
+                           clearable
+                           multiple
+                           collapse-tags
+                           collapse-tags-tooltip
+                           style="width: 500px"
+                >
+                    <el-option
+                        v-for="item in selectedList"
+                        :key="item.songId"
+                        :label="item.songName"
+                        :value="item.songId"
+                        :disabled="item.disabled"
+                    />
+                </el-select>
+            </el-form-item>
+        </el-form>
         <template #footer>
-      <span class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="addSong">确 定</el-button>
-      </span>
+          <span class="dialog-footer">
+            <el-button @click="dialogVisible = false">取 消</el-button>
+            <el-button type="primary" @click="addSong">确 定</el-button>
+          </span>
         </template>
     </el-dialog>
 </template>
@@ -78,7 +84,6 @@ import {useAdminStore} from "@/store/admin";
 import {storeToRefs} from "pinia";
 import {HttpManager} from "@/api/request";
 import {usePlayerStore} from "@/store/player";
-import {FormRules} from "element-plus";
 
 //<editor-fold desc="路由导航">
 const adminStore = useAdminStore();
@@ -252,11 +257,21 @@ const showSelect = async () => {
         }else selectedList.value.push(Object.assign(tmp, {disabled: true}));
     }
 }
-const addSong = () => {
+const addSong = async () => {
     console.log(selectRes.value);
+    const result = await HttpManager.addSongsIntoList(selectRes.value,songListId.value);
+    ElMessage({
+        message: result.message,
+        type: result.type,
+    });
+    if (result.success)
+        dialogVisible.value = false;
+    await getData();
 }
 
-
+watch(dialogVisible, (value) =>{
+    if (!value) selectRes.value = []
+})
 //</editor-fold>
 
 </script>

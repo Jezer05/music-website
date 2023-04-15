@@ -116,7 +116,7 @@ export const HttpManager = {
   getAllSong: async () =>
       axiosWithJson.get("/songs"),
   // 往歌单中添加歌曲.
-  addSongsIntoSongList: async (songIds: Array<number>, songListId: number) =>
+  addSongsIntoList: async (songIds: Array<number>, songListId: number) =>
       axiosWithJson.post(`/listSongs/${songListId}`, JSON.stringify(songIds))
   //</editor-fold>
 }
