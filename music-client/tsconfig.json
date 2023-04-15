@@ -11,8 +11,12 @@
     "esModuleInterop": true,
     "lib": ["ESNext", "DOM"],
     "skipLibCheck": true,
-    "noEmit": true
+    "noEmit": true,
+    "baseUrl": ".", // 设置url
+    "paths": { // 用于设置模块名到基于baseUrl的路径映射
+      "@/*": ["src/*"],
+    }
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue","components.d.ts","auto-imports.d.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

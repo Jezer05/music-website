@@ -5,16 +5,22 @@ import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import vue from '@vitejs/plugin-vue'
 import {join} from "path";
+import OptimizationPersist from 'vite-plugin-optimize-persist'
+import PkgConfig from 'vite-plugin-package-config'
 
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: './', // 添加这个属性
   resolve: {
     alias: {
       '@': join(__dirname, "src"),
     }
   },
   plugins: [
+    // 缓解加载慢的问题
+    PkgConfig(),
+    OptimizationPersist(),
     // unplugin-auto-import来实现vue函数的自动导入
     AutoImport({
       // targets to transform
