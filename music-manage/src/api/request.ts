@@ -99,6 +99,24 @@ export const HttpManager = {
   updateSongListMsg: async (id: number, songList:SongListReqForm)=>
       axiosWithJson.put(`/songLists/${id}`,songList),
   updateSongListImg: async (id:number, file:any)=>
-      axiosWithMul.put(`/songLists/img/${id}`, {file})
+      axiosWithMul.put(`/songLists/img/${id}`, {file}),
+  //</editor-fold>
+
+  //<editor-fold desc="歌单内容">
+  getListSongByListId: async (id: number) =>
+      axiosWithJson.get(`/listSongs/songList/${id}`),
+  // 删除
+  deleteListSong: async (id:number) =>
+      axiosWithJson.delete(`/listSongs/${id}`),
+  deleteListSongs: async (ids: Array<number>)=>
+      axiosWithJson.delete("/listSongs", {
+        data: JSON.stringify(ids)
+      }),
+  // 获得所有歌曲，在添加时使用
+  getAllSong: async () =>
+      axiosWithJson.get("/songs"),
+  // 往歌单中添加歌曲.
+  addSongsIntoSongList: async (songIds: Array<number>, songListId: number) =>
+      axiosWithJson.post(`/listSongs/${songListId}`, JSON.stringify(songIds))
   //</editor-fold>
 }

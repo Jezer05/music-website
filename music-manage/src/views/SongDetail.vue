@@ -51,7 +51,7 @@
       </el-table-column>
       <el-table-column label="评论" width="90" align="center">
         <template v-slot="scope">
-          <el-button @click="goCommentDetial(scope.row.id)">评论</el-button>
+          <el-button @click="goCommentDetail(scope.row.id)">评论</el-button>
         </template>
       </el-table-column>
       <el-table-column label="操作" width="160" align="center">
@@ -112,15 +112,15 @@ import {useAdminStore} from "@/store/admin";
 import {usePlayerStore} from "@/store/player";
 import {FormRules} from "element-plus";
 
-const adminStore = useAdminStore();
-const playerStore = usePlayerStore();
+
 const {beforeImgUpload,beforeSongUpload} = useUpload();
 
 //<editor-fold desc="路由管理">
+const adminStore = useAdminStore();
 const {routerManager} = useRouter();
 // 面包屑导航
 const {breadcrumbList} = storeToRefs(adminStore)
-function goCommentDetial(id:number) {
+function goCommentDetail(id:number) {
   const breadcrumbList = reactive([
     {
       path: RouterName.Singer,
@@ -177,6 +177,7 @@ function handleCurrentChange(val:number) {
 
 //<editor-fold desc="音乐播放">
 // 正在播放的歌曲
+const playerStore = usePlayerStore();
 const musicName = ref('');
 const {isPlay} = storeToRefs(playerStore)
 function setSongUrl(row:any) {

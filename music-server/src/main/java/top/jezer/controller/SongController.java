@@ -154,9 +154,7 @@ public class SongController {
             throw new SystemException();
         }
     }
-    //</editor-fold>
 
-    //<editor-fold desc="暂未使用">
     // 查询所有歌曲
     @GetMapping
     public Object getAllSong(){
@@ -166,6 +164,9 @@ public class SongController {
             throw new SystemException();
         }
     }
+    //</editor-fold>
+
+    //<editor-fold desc="暂未使用">
     // 返回指定歌曲ID的歌曲
     @GetMapping("/{id}")
     public Object getSongById(@PathVariable("id") Integer id){
