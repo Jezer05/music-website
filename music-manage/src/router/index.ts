@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
+import {createRouter, createWebHistory, RouteRecordRaw} from 'vue-router'
 import {useAdminStore} from "@/store/admin";
 
 const routes: Array<RouteRecordRaw> = [
