@@ -1,5 +1,5 @@
 import axios, {AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse} from "axios";
-import {useAdminStore} from "@/store/admin";
+import {useLoginStore} from "@/store/login";
 import router from "@/router";
 // 数据返回的接口
 interface Result{
@@ -46,7 +46,7 @@ export class RequestHttp {
       this.service.interceptors.request.use(
         // 这里有axios的bug，按理应该是AxiosRequestConfig
         (config:any)  => {
-          const token = useAdminStore().token;
+          const token = useLoginStore().token;
           return {
             ...config,
             headers: {
@@ -70,21 +70,11 @@ export class RequestHttp {
           const {data} = response; // 解构
           if (data.code === RequestEnums.EXPIRED) {
             // 登录信息失效，应跳转到登录页面，并清空pinia和localStorage的数据
-            useAdminStore().logout();
-            ElMessage.error("token失效，请重新登录")
-            // 这里不能通过全局路由进行跳转，因为无法通过getInstance获得实例
-            // useRouter().routerManager(RouterName.SignIn, {path: RouterName.SignIn})
-            router.replace({
-              path: "/login"
-            })
+            useLoginStore().logout();
+            ElMessage.error("身份过期，请重新登录")
             return Promise.reject(data);
           }
-            // 全局错误信息拦截（防止下载文件得时候返回数据流，没有code，直接报错）
-            // if (data.code && data.code !== RequestEnums.SUCCESS) {
-            //     ElMessage.error(data); // 此处也可以使用组件提示报错信息
-            //     return Promise.reject(data)
-            // }
-            return data;
+          return data;
         },
           (error: AxiosError) => {
             const {response} = error;

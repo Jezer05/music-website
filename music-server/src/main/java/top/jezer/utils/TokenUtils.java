@@ -7,6 +7,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import top.jezer.controller.dto.LoginDTO;
 import top.jezer.domain.Admin;
 import top.jezer.exception.SystemException;
 
@@ -21,10 +22,10 @@ public class TokenUtils {
 
     /**
      * 生成token
-     * @param admin
+     * @param loginDTO
      * @return token
      */
-    public static String sign(Admin admin){
+    public static String sign(LoginDTO loginDTO){
         String token;
         try {
             Date expireAt=new Date(System.currentTimeMillis()+EXPIRE_TIME);
@@ -32,7 +33,7 @@ public class TokenUtils {
                     //发行人
                     .withIssuer("auth0")
                     //存放数据
-                    .withClaim("username",admin.getName())
+                    .withClaim("username",loginDTO.getUsername())
                     //过期时间
                     .withExpiresAt(expireAt)
                     .sign(Algorithm.HMAC256(TOKEN_SECRET));

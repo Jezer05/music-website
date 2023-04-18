@@ -1,9 +1,12 @@
 package top.jezer.controller;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import top.jezer.common.ErrorResp;
 import top.jezer.common.SuccessResp;
+import top.jezer.controller.dto.LoginDTO;
+import top.jezer.domain.Consumer;
 import top.jezer.exception.SystemException;
 import top.jezer.service.serviceImpl.ConsumerServiceImpl;
 
@@ -46,7 +49,38 @@ public class ConsumerController {
     //</editor-fold>
 
     //<editor-fold desc="改">
-
+    @PostMapping("/login")
+    public Object loginStatus(@RequestBody LoginDTO loginDTO) {
+        loginDTO.setUsername(loginDTO.getUsername().trim());
+        try{
+            loginDTO = consumerService.login(loginDTO);
+            if (null != loginDTO) {
+                return new SuccessResp("登录成功", loginDTO);
+            } else {
+                return new ErrorResp("用户名或密码错误");
+            }
+        } catch (Exception e){
+            throw new SystemException();
+        }
+    }
+    @PostMapping("/register")
+    public Object register(@RequestBody LoginDTO loginDTO) {
+        String name = loginDTO.getUsername().trim();
+        try{
+            if (null != consumerService.getConsumerByNameEq(name))
+                return new ErrorResp("已存在同名用户");
+            Consumer consumer = new Consumer();
+            consumer.setUsername(name);
+            consumer.setPassword(loginDTO.getPassword().trim());
+            consumer.setAvatar("/img/avatarImages/user.jpg");
+            consumer.setSex(3);
+            boolean res = consumerService.addConsumer(consumer);
+            if (res) return new SuccessResp("注册成功", consumer);
+            else return new ErrorResp("注册失败");
+        } catch (Exception e){
+            throw new SystemException();
+        }
+    }
     //</editor-fold>
 
     //<editor-fold desc="查">
