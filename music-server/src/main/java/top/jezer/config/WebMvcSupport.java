@@ -48,6 +48,8 @@ public class WebMvcSupport extends WebMvcConfigurationSupport {
         List<String> excludePath = new ArrayList<>();
         //排除拦截，除了注册登录(此时还没token)，其他都拦截
         excludePath.add("/admins/login");  //登录
+        excludePath.add("/consumers/login");  //登录
+        excludePath.add("/consumers/register");  //注册
         ////静态资源
         excludePath.add("/img/**");
         excludePath.add("/song/**");
