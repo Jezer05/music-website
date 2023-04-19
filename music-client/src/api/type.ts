@@ -3,3 +3,10 @@ export interface LoginReqForm {
   password: string;
 }
 
+export interface MusicEntity{
+  id:number,
+  name:string,
+  pic:string,
+  url:string,
+  lyric?:string
+}

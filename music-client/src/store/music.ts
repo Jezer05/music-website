@@ -4,6 +4,7 @@ interface MusicDetail{
   songTitle:string,
   songUrl:string,
   songPic:string,
+  lyric?:string
 }
 
 interface Music {
@@ -49,6 +50,10 @@ export const useMusicStore = defineStore({
     setCurrentMusic(musicDetail: MusicDetail){
       this.$patch({...musicDetail});
     },
+    addMusicToList(musicDetail: MusicDetail){
+      this.curPlayList.splice(this.curPlayIndex, 0, musicDetail);
+      this.$patch({...musicDetail});
+    }
   },
   persist: {
     paths: ["songId","songTitle","songUrl","songPic","curPlayList","curPlayIndex"]

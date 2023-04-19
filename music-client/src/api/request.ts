@@ -7,4 +7,6 @@ export const HttpManager = {
   login: async (loginReqForm: LoginReqForm) => axiosWithJson.post('/consumers/login',loginReqForm),
   // 注册
   register: async (registerForm: LoginReqForm)=> axiosWithJson.post('/consumers/register',registerForm),
+  // 获得所有歌曲,
+  getAllSong: async () => axiosWithJson.get('/songs'),
 }
