@@ -69,6 +69,11 @@ public class SongListServiceImpl implements SongListService {
     public SongList getSongList(Integer id) {
         return songListMapper.selectById(id);
     }
+
+    @Override
+    public List<SongList> getSongLists(List<Integer> ids) {
+        return songListMapper.selectBatchIds(ids);
+    }
     //</editor-fold>
 
 

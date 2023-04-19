@@ -11,7 +11,7 @@
     </div>
     <el-table border size="small" :data="data" @selection-change="handleSelectionChange" stripe>
         <el-table-column type="selection" width="40" align="center"/>
-        <el-table-column label="ID" prop="id" width="50" align="center"/>
+        <el-table-column label="ID" prop="collectId" width="50" align="center"/>
         <el-table-column label="封面" width="110" align="center">
           <template v-slot="scope">
             <el-image :src="attachUrl(scope.row.pic)" style="width: 100%; height: 100px" fit="cover"/>

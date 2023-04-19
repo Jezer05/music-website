@@ -91,7 +91,12 @@ public class SongServiceImpl implements SongService {
         wrapper.like(Song::getName, name);
         return songMapper.selectList(wrapper);
     }
-    //</editor-fold>
+
+    @Override
+    public List<Song> getSongs(List<Integer> ids) {
+        return songMapper.selectBatchIds(ids);
+    }
+//</editor-fold>
 
 
 

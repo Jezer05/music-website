@@ -13,6 +13,8 @@
             {{ item.name }}
         </div>
         <div class="button-wrapper">
+          <img src="@/static/img/icons/爱心.svg" alt="" v-if="!songLikes.includes(item.id)" class="Musicice"  style="margin-right: 5px" @click="collectSong(item.id)"/>
+          <img src="@/static/img/icons/红爱心.svg" alt="" v-else class="Musicice" style="margin-right: 5px" @click="delCollectSong(item.id)" />
             <!-- 播放 -->
           <svg @click="playMusic(item)" t="1648883741930" class="icon" viewBox="0 0 1024 1024" version="1.1"
                xmlns="http://www.w3.org/2000/svg" p-id="2199" width="28" height="28">
@@ -56,6 +58,8 @@ import {attachUrl} from "@/utils";
 import {useMusicStore} from "@/store/music";
 import {MusicEntity} from "@/api/type";
 import {storeToRefs} from "pinia";
+import {useLoginStore} from "@/store/login";
+import emitter from "@/utils/emitter";
 
 const props = defineProps({
   pageSize: {
@@ -103,6 +107,17 @@ const playMusic = (item : MusicEntity) => {
     })
     musicStore.setCurrentPlayIndex(index)
   }
+}
+//</editor-fold>
+
+//<editor-fold desc="收藏判断">
+const loginStore = useLoginStore();
+const {songLikes} = storeToRefs(loginStore);
+const collectSong = (songId:number) => {
+  emitter.emit("addSongLike", songId);
+}
+const delCollectSong = (songId:number) => {
+  emitter.emit("deleteSongLike", songId);
 }
 //</editor-fold>
 

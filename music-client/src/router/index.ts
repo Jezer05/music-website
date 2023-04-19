@@ -22,9 +22,14 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('@/views/MusicLibrary.vue'),
   },
   {
-    path: '/musicLibrary',
-    name: 'musicLibrary',
-    component: () => import('@/views/MusicLibrary.vue'),
+    path: '/theme',
+    name: 'theme',
+    component: () => import('@/views/ThemePage.vue'),
+  },
+  {
+    path: '/like',
+    name: 'like',
+    component: () => import('@/views/LikePage.vue'),
   },
 ]
 

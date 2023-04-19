@@ -1,11 +1,11 @@
 package top.jezer.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import top.jezer.common.ErrorResp;
 import top.jezer.common.SuccessResp;
-import top.jezer.controller.dto.CollectDTO;
+import top.jezer.controller.dto.CollectSongDTO;
+import top.jezer.domain.Collect;
 import top.jezer.exception.SystemException;
 import top.jezer.service.serviceImpl.CollectServiceImpl;
 
@@ -17,7 +17,19 @@ public class CollectController {
     @Autowired
     private CollectServiceImpl collectService;
     //<editor-fold desc="增">
-
+    // 收藏歌曲
+    @PostMapping("/song/{id}")
+    public Object addCollectSong(@PathVariable Integer id, @RequestBody Collect collect){
+        collect.setUserId(id);
+        collect.setType(0);
+        try {
+           boolean res = collectService.addCollectSong(collect);
+           if (res) return new SuccessResp("歌曲收藏成功");
+           else return new ErrorResp("歌曲收藏失败");
+        }catch (Exception e){
+            throw new SystemException();
+        }
+    }
     //</editor-fold>
 
     //<editor-fold desc="删">
@@ -43,6 +55,18 @@ public class CollectController {
             throw new SystemException();
         }
     }
+
+    @DeleteMapping("/song/{id}")
+    public Object deleteCollectSongBySongId(@PathVariable Integer id, @RequestParam Integer songId){
+        try {
+            boolean res = collectService.delCollectSongBySongId(id, songId);
+            if (res)
+                return new SuccessResp("取消收藏成功");
+            else return new ErrorResp("未找到对应内容");
+        }catch (Exception e){
+            throw new SystemException();
+        }
+    }
     //</editor-fold>
 
     //<editor-fold desc="改">
@@ -54,7 +78,7 @@ public class CollectController {
     @GetMapping("/song/user/{id}")
     public Object getCollectSongByUserId(@PathVariable("id") Integer userId){
         try {
-            List<CollectDTO> res = collectService.getCollectSongByUserId(userId);
+            List<CollectSongDTO> res = collectService.getCollectSongByUserId(userId);
             if (res != null)
                 return new SuccessResp("查询成功", res);
             else return new ErrorResp("未收藏歌曲");

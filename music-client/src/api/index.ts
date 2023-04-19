@@ -56,8 +56,8 @@ export class RequestHttp {
           }
         },
         (error: AxiosError) => {
-            // 请求报错
-            Promise.reject(error)
+          // 请求报错
+          Promise.reject(error).catch()
         }
       )
 

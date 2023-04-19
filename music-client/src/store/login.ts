@@ -1,5 +1,6 @@
 import {defineStore} from "pinia";
 
+
 export const useLoginStore = defineStore({
   id: "app-login",
   state: () => ({
@@ -8,6 +9,7 @@ export const useLoginStore = defineStore({
     password: "",
     avatar: "",
     token: "",
+    songLikes: [-1],
     isLogin: false
   }),
   actions: {
@@ -23,6 +25,17 @@ export const useLoginStore = defineStore({
     },
     login(consumerInfo: object){
       this.$patch({...consumerInfo, isLogin: true})
+    },
+    setSongLikes(songLikes: number[]){
+      this.songLikes = songLikes;
+    },
+    addSongLike(songId: number){
+      this.songLikes.push(songId)
+    },
+    deleteSongLike(songId:number){
+      const index = this.songLikes.indexOf(songId)
+      if (index >= 0)
+        this.songLikes.splice(index,1)
     }
   },
   persist: true,

@@ -20,5 +20,14 @@ export const HttpManager = {
       axiosWithJson.get(`/listSongs/songList/${id}`),
   // 获得对应歌单的评论
   getCommentByListId: async (id:number) =>
-      axiosWithJson.get(`/comments/songList/detail/${id}`)
+      axiosWithJson.get(`/comments/songList/detail/${id}`),
+  // 查找用户收藏的歌曲
+  getCollectSong: async (id:number) =>
+      axiosWithJson.get(`/collects/song/user/${id}`),
+  // 添加收藏歌曲
+  addCollectSong: async (id:number, songId:number)=>
+      axiosWithJson.post(`/collects/song/${id}`, {songId}),
+  // 取消收藏歌曲
+  delCollectSong: async (id:number, songId:number) =>
+      axiosWithJson.delete(`/collects/song/${id}?songId=${songId}`)
 }

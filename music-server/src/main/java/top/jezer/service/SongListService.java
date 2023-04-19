@@ -19,4 +19,6 @@ public interface SongListService {
     SongList getSongListByTitleEq(String title);
     // 根据Id获得歌单信息
     SongList getSongList(Integer id);
+    // 根据歌单Id数组查询
+    List<SongList> getSongLists(List<Integer> ids);
 }

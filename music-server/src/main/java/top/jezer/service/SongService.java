@@ -25,5 +25,7 @@ public interface SongService {
     List<Song> getSongByName(String name);
     // 根据歌曲名精确匹配
     Song getSongByNameEq(String name);
+    // 根据歌曲Id数组查询
+    List<Song> getSongs(List<Integer> ids);
 
 }

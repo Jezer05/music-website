@@ -132,7 +132,6 @@ HttpManager.getAllConsumer().then((result) => {
   userSex.series[0].data.push(setSex(0, result.data));
   userSex.series[0].data.push(setSex(1, result.data));
   userSexChart = echarts.init(document.getElementById("userSex")!);
-  console.log(userSex)
   userSexChart.setOption(userSex);
 });
 //</editor-fold>

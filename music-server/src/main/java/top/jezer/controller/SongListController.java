@@ -110,5 +110,17 @@ public class SongListController {
             throw new SystemException();
         }
     }
+    // 根据歌单Id数组查询
+    @GetMapping("/ids")
+    public Object getSongLists(@RequestParam List<Integer> ids){
+        try {
+            List<SongList> list = songListService.getSongLists(ids);
+            if (null != list)
+                return new SuccessResp("查询成功", list);
+            else return new ErrorResp("查询失败");
+        }catch (Exception e){
+            throw new SystemException();
+        }
+    }
     //</editor-fold>
 }
