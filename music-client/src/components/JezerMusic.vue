@@ -5,10 +5,10 @@
       <span class="status">操作</span>
     </li>
   </ul>
-  <el-skeleton :rows="5" animated :loading="loading" />
-  <ul class="s-list">
+  <el-skeleton :rows="5" animated :loading="isLoading" />
+  <ul class="s-list" v-if="!isLoading">
     <li class="adobe-product" v-for="(item, index) in data" :key="index" @dblclick="playMusic(item)">
-        <div class="products Music-name">
+        <div class="products Music-name" :title="item.name">
             <img :src="attachUrl(item.pic)" alt="" />
             {{ item.name }}
         </div>
@@ -36,6 +36,17 @@
         </div>
     </li>
   </ul>
+  <el-pagination
+          class="pagination"
+          background
+          hide-on-single-page
+          layout="total, prev, pager, next"
+          :current-page="currentPage"
+          :page-size="props.pageSize"
+          :total="props.rawData?.length"
+          @current-change="handleCurrentChange"
+  >
+  </el-pagination>
 </template>
 
 <script setup lang="ts">
@@ -43,40 +54,57 @@ import {HttpManager} from "@/api/request";
 import {attachUrl} from "@/utils";
 import {useMusicStore} from "@/store/music";
 import {MusicEntity} from "@/api/type";
+import {storeToRefs} from "pinia";
 
-//<editor-fold desc="数据展示">
-const loading = ref(true);
-const data = ref([]);
-const getData = async () => {
-  data.value = [];
-  const result = await HttpManager.getAllSong();
-  if (!result.success)
-    ElMessage({
-      message: result.message,
-      type: result.type,
-      duration: 1000,
-      grouping: true
-    })
-  else {
-    loading.value = false;
-    data.value = result.data;
+const props = defineProps({
+  pageSize: {
+    type: Number,
+    required: true
+  },
+  rawData: {
+    type: Array,
+    required: true
+  },
+  isLoading: {
+    type: Boolean,
+    required: true
   }
+})
+
+//<editor-fold desc="分页">
+const currentPage = ref(1);
+function handleCurrentChange(val:number) {
+  currentPage.value = val;
 }
-onMounted(() => {
-  getData();
+const data = computed(() => {
+  return props.rawData.slice((currentPage.value - 1) * props.pageSize, currentPage.value * props.pageSize);
 })
 //</editor-fold>
 
 //<editor-fold desc="播放">
 const musicStore = useMusicStore();
+const {curPlayList,curPlayIndex} = storeToRefs(musicStore)
 const playMusic = (item : MusicEntity) => {
-  const {id:songId, name:songTitle, url: songUrl, pic: songPic} = item
-  musicStore.addMusicToList({
-    songId,songTitle,songPic,songUrl
-  })
-  musicStore.play();
+  const {id: songId, name: songTitle, url: songUrl, pic: songPic} = item
+  // 存放已经在歌单中的歌曲id
+  let ids: number[] =[];
+  for (let tmp of curPlayList.value)
+    ids.push(tmp.songId);
+  const index = ids.indexOf(item.id)
+  if (index < 0) {
+    musicStore.addMusicToList({
+      songId, songTitle, songPic, songUrl
+    })
+  }
+  else {
+    musicStore.setCurrentMusic({
+      songId, songTitle, songPic, songUrl
+    })
+    musicStore.setCurrentPlayIndex(index)
+  }
 }
 //</editor-fold>
+
 </script>
 
 <style lang="scss" scoped>
@@ -97,6 +125,8 @@ const playMusic = (item : MusicEntity) => {
     justify-content: center;
   }
 }
-
+.pagination {
+  margin: 20px 0;
+}
 
 </style>

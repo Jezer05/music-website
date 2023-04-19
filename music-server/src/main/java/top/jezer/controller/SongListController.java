@@ -98,5 +98,17 @@ public class SongListController {
             throw new SystemException();
         }
     }
+
+    @GetMapping("/{id}")
+    public Object getSongList(@PathVariable Integer id){
+        try {
+            SongList songList = songListService.getSongList(id);
+            if (null != songList)
+                return new SuccessResp("查询成功", songList);
+            else return new ErrorResp("查询失败");
+        }catch (Exception e){
+            throw new SystemException();
+        }
+    }
     //</editor-fold>
 }

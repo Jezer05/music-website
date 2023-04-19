@@ -17,4 +17,6 @@ public interface SongListService {
     boolean deleteSongList(Integer id);
     boolean deleteSongLists(List<Integer> ids);
     SongList getSongListByTitleEq(String title);
+    // 根据Id获得歌单信息
+    SongList getSongList(Integer id);
 }

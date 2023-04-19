@@ -14,9 +14,9 @@
           <!-- 歌曲播放控制 -->
           <div class="m-btns">
             <a  href="javascript:" @click="changeMode">
-              <img v-if="playMode === '0'" src="@/static/img/icons/序列.svg" alt="" class="Musicice" />
-              <img v-else-if="playMode === '1'" src="@/static/img/icons/随机.svg" alt="" class="Musicice" />
-              <img v-else-if="playMode === '2'" src="@/static/img/icons/单曲循环.svg" alt="" class="Musicice" />
+              <img v-if="playMode === 0" src="@/static/img/icons/序列.svg" alt="" class="Musicice" />
+              <img v-else-if="playMode === 1" src="@/static/img/icons/随机.svg" alt="" class="Musicice" />
+              <img v-else-if="playMode === 2" src="@/static/img/icons/单曲循环.svg" alt="" class="Musicice" />
             </a>
             <a href="javascript:" @click="previousMusic">
               <img src="@/static/img/icons/上一首.svg" alt="" class="Musicice" />
@@ -60,7 +60,7 @@ import {storeToRefs} from "pinia";
 
 const musicStore = useMusicStore();
 const audio = ref<HTMLAudioElement>()
-const {songUrl, isPlay, curPlayIndex, curPlayList,songPic, songTitle} = storeToRefs(musicStore);
+const {songUrl, isPlay, playMode, curPlayIndex, curPlayList,songPic, songTitle} = storeToRefs(musicStore);
 
 //<editor-fold desc="原生音乐播放器">
 const duration = ref(0)
@@ -85,14 +85,9 @@ const ended = () => {
 //</editor-fold>
 
 //<editor-fold desc="播放模式">
-const playMode = ref(window.localStorage.getItem("playMode")  || "0")
 const changeMode = () => {
-  playMode.value = ((parseInt(playMode.value) + 1) % 3).toString();
-  window.localStorage.setItem("playMode", playMode.value)
+  musicStore.changePlayMode();
 }
-onMounted(() => {
-  window.localStorage.setItem("playMode", playMode.value)
-})
 //</editor-fold>
 
 //<editor-fold desc="音量">
@@ -138,11 +133,11 @@ const nextMusic = (flag: number) => {
     musicStore.setCurrentPlayIndex(0)
     return
   }
-  if(playMode.value === "0")
+  if(playMode.value === 0)
     curPlayIndex.value = (curPlayIndex.value + 1) % length;
-  if(playMode.value === "1")
+  if(playMode.value === 1)
     curPlayIndex.value = Math.floor(Math.random() * length);
-  if(flag === 1 && playMode.value === "3")
+  if(flag === 1 && playMode.value === 3)
     curPlayIndex.value = (curPlayIndex.value + 1) % length;
   setCurrentMusic();
 }
@@ -158,16 +153,15 @@ const previousMusic = () => {
       musicStore.setCurrentPlayIndex(0)
       return
     }
-    if(playMode.value === "0" || playMode.value === "0" )
+    if(playMode.value === 0 || playMode.value === 0 )
       curPlayIndex.value = (curPlayIndex.value - 1) % length;
-    if(playMode.value === "1")
+    if(playMode.value === 1)
       curPlayIndex.value = Math.floor(Math.random() * length);
     setCurrentMusic();
 }
 const setCurrentMusic = () => {
   const musicDetail = curPlayList.value[curPlayIndex.value];
   musicStore.setCurrentMusic(musicDetail);
-  musicStore.play();
 }
 const togglePlay = () => {
   musicStore.togglePlay();

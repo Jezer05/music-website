@@ -1,5 +1,5 @@
 import {defineStore} from "pinia";
-interface MusicDetail{
+export interface MusicDetail{
   songId:number,
   songTitle:string,
   songUrl:string,
@@ -14,7 +14,7 @@ interface Music {
   songPic:string,
   isPlay: boolean,
   // duration: number,
-  // playMode: number,
+  playMode: number,
   // curTime: number,
   // changeTime: number;
   curPlayList: Array<MusicDetail>,
@@ -29,6 +29,7 @@ export const useMusicStore = defineStore({
     songUrl: "/song/张杰-仰望星空.mp3", // 音乐 URL
     songPic: "/img/songPic/haikuotiankong.jpg", // 歌曲图片
     isPlay: false, // 播放状态
+    playMode: 0, // 播放模式
     /** 音乐列表信息 */
     curPlayList: [], // 当前播放列表
     curPlayIndex: -1, // 当前歌曲在歌曲列表的位置
@@ -44,18 +45,30 @@ export const useMusicStore = defineStore({
     togglePlay(){
       this.isPlay = !this.isPlay
     },
+    // 更换音乐播放模式
+    changePlayMode(){
+      this.playMode = (this.playMode + 1) % 3
+    },
     setCurrentPlayIndex(index: number) {
       this.curPlayIndex = index;
     },
     setCurrentMusic(musicDetail: MusicDetail){
       this.$patch({...musicDetail});
+      this.isPlay = true;
     },
     addMusicToList(musicDetail: MusicDetail){
       this.curPlayList.splice(this.curPlayIndex, 0, musicDetail);
-      this.$patch({...musicDetail});
+      this.curPlayIndex = (this.curPlayIndex + 1) % this.curPlayList.length
+      this.$patch({...musicDetail})
+      this.isPlay = true
+    },
+    setCurPlayList(list:MusicDetail[], index:number){
+      this.curPlayList = list;
+      this.$patch({...list[index]});
+      this.isPlay = true;
     }
   },
   persist: {
-    paths: ["songId","songTitle","songUrl","songPic","curPlayList","curPlayIndex"]
+    paths: ["songId","songTitle","songUrl","songPic", "playMode", "curPlayList","curPlayIndex"]
   }
 })

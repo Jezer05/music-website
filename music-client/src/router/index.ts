@@ -6,6 +6,16 @@ const routes: Array<RouteRecordRaw> = [
       name: 'home',
       component: () => import('@/views/HomePage.vue')
   },
+  {
+    path: '/playlist',
+    name: 'playlist',
+    component: () => import('@/views/PlaylistPage.vue'),
+  },
+  {
+    path: '/playlistDetail',
+    name: 'playlistDetail',
+    component: () => import('@/views/PlaylistDetail.vue'),
+  },
 ]
 
 

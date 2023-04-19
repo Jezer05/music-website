@@ -10,3 +10,11 @@ export interface MusicEntity{
   url:string,
   lyric?:string
 }
+
+export interface PlaylistDetail{
+  id:number,
+  title:string,
+  pic:string,
+  introduction:string
+  style: string
+}

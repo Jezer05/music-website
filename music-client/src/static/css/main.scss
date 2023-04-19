@@ -1105,7 +1105,10 @@ body.light-mode .video-bg:before {
 
 .artist-name {
   margin-left: 25px;
-
+  h2 {
+    display: inline-block;
+    margin-right: 50px;
+  }
   h2,
   span {
     user-select: none;
@@ -1113,7 +1116,7 @@ body.light-mode .video-bg:before {
 
   p {
     width: 950px;
-    height: 90px;
+    height: auto;
     padding-right: 10px;
     overflow: hidden;
     // white-space:nowrap;

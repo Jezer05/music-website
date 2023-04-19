@@ -64,6 +64,11 @@ public class SongListServiceImpl implements SongListService {
         wrapper.eq(SongList::getTitle, title);
         return songListMapper.selectOne(wrapper);
     }
+
+    @Override
+    public SongList getSongList(Integer id) {
+        return songListMapper.selectById(id);
+    }
     //</editor-fold>
 
 
