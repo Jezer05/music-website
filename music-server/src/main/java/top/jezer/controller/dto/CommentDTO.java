@@ -12,5 +12,6 @@ public class CommentDTO {
     private String username;
     private String avatar;
     private String content;
+    private String createTime;
     private Integer mark;
 }

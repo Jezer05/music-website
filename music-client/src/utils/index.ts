@@ -21,3 +21,12 @@ export function formatSeconds(value:number) {
   else second_str = "" + second
   return minute_str + ":" + second_str;
 }
+// 解析日期
+export function parseTime(cellValue: any) {
+  if (cellValue == null || cellValue == "") return "";
+  const date = new Date(cellValue);
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+  const day = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+  return year + "-" + month + "-" + day;
+}

@@ -30,7 +30,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public List<CommentDTO> getCommentBySongListId(Integer songListId) {
         MPJLambdaWrapper<Comment> wrapper = new MPJLambdaWrapper<Comment>()
-                .select(Comment::getId, Comment::getContent, Comment::getMark)
+                .select(Comment::getId, Comment::getContent, Comment::getMark, Comment::getCreateTime)
                 .select(Consumer::getUsername, Consumer::getAvatar)
                 .leftJoin(Consumer.class, Consumer::getId, Comment::getUserId)
                 .eq(Comment::getType, 1).eq(Comment::getSongListId, songListId);

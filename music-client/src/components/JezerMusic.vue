@@ -38,6 +38,7 @@
   </ul>
   <el-pagination
           class="pagination"
+          v-if="!isLoading"
           background
           hide-on-single-page
           layout="total, prev, pager, next"

@@ -32,7 +32,7 @@
           <div class="slider-demo-block right-voice">
             <a href="javascript:"><img src="@/static/img/icons/声音.svg" alt="" width="20"></a>
             <!-- 音量条 -->
-            <el-slider v-model="volume" @change="changeVolume" style="width: 70px" :show-tooltip="true" />
+            <el-slider v-model="volume" @change="changeVolume" style="width: 100px; margin-right: 20px" :show-tooltip="true" />
             <!-- TODO: 播放列表设计-->
             <a href="javascript:" @click="">
               <span class="notification-number">{{ curPlayList.length }}</span>
@@ -109,12 +109,10 @@ watch(curTime, () => {
   endTime.value = formatSeconds(duration.value);
 })
 const changeTime = () => {
-  // 不需要给curTime复制，已经配置了监听
+  // 不需要给curTime赋值，已经配置了监听
   audio.value!.currentTime = progress.value * duration.value /100
 }
-watch(curTime, (newVal) => {
-  progress.value = newVal / duration.value * 100
-})
+
 //</editor-fold>
 
 //<editor-fold desc="音乐控制">

@@ -9,6 +9,7 @@
               <div class="playlist-title" v-if="!isLoading">
                   <h2>{{ playlistDetail.title }}</h2>
                   <el-button color="#729bed" round class="m-lib-btn" @click="setPlaylist">立即播放</el-button>
+                  <el-button color="#72d9ed" round class="m-lib-btn" @click="addComment">评论</el-button>
               </div>
               <div class="tags" v-if="!isLoading">
                   <ul>
@@ -20,6 +21,7 @@
           </div>
       </div>
       <JezerMusic :isLoading="isLoading" :rawData="songListRawData" :pageSize="15"/>
+      <JezerComment :isLoading="isLoading" :rawData="commentRawData" :pageSize="15"/>
   </div>
 </template>
 
@@ -31,6 +33,7 @@ import {HttpManager} from "@/api/request";
 import {attachUrl} from "@/utils";
 import {MusicDetail, useMusicStore} from "@/store/music";
 import {storeToRefs} from "pinia";
+import JezerComment from "@/components/JezerComment.vue";
 
 const {proxy} = getCurrentInstance()!;
 const playlistId:any = ref(proxy?.$route.query.playlistId)
@@ -69,7 +72,7 @@ onMounted(() => {
 })
 //</editor-fold>
 
-//<editor-fold desc="歌单替换">
+//<editor-fold desc="替换播放列表">
 const musicStore = useMusicStore();
 const {playMode} = storeToRefs(musicStore);
 const setPlaylist = () => {
@@ -85,6 +88,13 @@ const setPlaylist = () => {
   }
 }
 //</editor-fold>
+
+//<editor-fold desc="添加评论">
+const addComment = () => {
+  
+}
+//</editor-fold>
+
 </script>
 
 <style lang="scss" scoped>

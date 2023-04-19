@@ -1,22 +1,23 @@
 <template>
     <div class="content-wrapper-header" style="margin-top: -10px;">
-        <video src="@/static/mp4/B站.mp4" autoplay loop muted style="border-radius: 14px;width: 100%;"></video>
+      <video src="@/static/mp4/B站.mp4" autoplay loop muted style="border-radius: 14px;width: 100%;"></video>
     </div>
 
     <div class="content-section">
-        <JezerPlaylist :pageSize = "20" :is-loading="isLoading" :raw-data="playlistRawData"/>
+      <JezerMusic :page-size="20" :is-loading="isLoading" :raw-data="musicRawData"/>
     </div>
 </template>
 
 <script setup lang="ts">
 import {HttpManager} from "@/api/request";
+
 //<editor-fold desc="数据获取">
-const playlistRawData = ref([])
+const musicRawData = ref([])
 const isLoading = ref(true)
 const getData = async () => {
-  playlistRawData.value = [];
-  const playlist = await HttpManager.getAllSongList();
-  if (!playlist.success)
+  musicRawData.value = [];
+  const music = await HttpManager.getAllSong();
+  if (!music.success)
     ElMessage({
       message: "资源获取失败",
       type: "error",
@@ -24,7 +25,7 @@ const getData = async () => {
       grouping: true
     })
   else {
-    playlistRawData.value = playlist.data;
+    musicRawData.value = music.data;
     isLoading.value = false;
   }
 }
