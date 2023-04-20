@@ -9,22 +9,32 @@ import emitter from "@/utils/emitter";
 //<editor-fold desc="收藏歌曲">
 const loginStore = useLoginStore();
 const {isLogin, id} = storeToRefs(loginStore);
-let songLikes:number[] = [];
-const getCollectSong = async () =>{
-  if(!isLogin) return
-  const result =await HttpManager.getCollectSong(id.value);
-  if(!result.success) return;
 
-  for (let item of result.data)
+const getCollect = async () =>{
+  const songLikes:number[] = [];
+  const playlistLikes: number[] = [];
+  if(!isLogin.value) return
+  const songCollect =await HttpManager.getCollectSong(id.value);
+  const listCollect = await HttpManager.getCollectList(id.value);
+  if(!songCollect.success || !listCollect.success) return;
+  for (let item of songCollect.data)
     songLikes.push(item.id);
+  console.log(songLikes)
+  for (let item of listCollect.data)
+    playlistLikes.push(item.id);
   loginStore.setSongLikes(songLikes);
+  loginStore.setPlaylistLikes(playlistLikes);
 }
 onMounted(() => {
-  getCollectSong();
+  getCollect();
 })
-watch(id, () => {
-  getCollectSong();
+
+// 监听pinia中id的变化
+watch(id, (newValue, oldValue) => {
+  getCollect()
 })
+
+// 歌曲收藏
 emitter.on("addSongLike",  async (songId) => {
   const result = await HttpManager.addCollectSong(id.value, songId as number);
   if (!result.success){
@@ -33,9 +43,8 @@ emitter.on("addSongLike",  async (songId) => {
   }
   loginStore.addSongLike(songId as number);
 })
-
+// 取消收藏
 emitter.on("deleteSongLike", async (songId) => {
-  console.log(songId)
   const res = await HttpManager.delCollectSong(id.value, songId as number)
   if (!res.success){
     ElMessage.error("取消收藏失败");

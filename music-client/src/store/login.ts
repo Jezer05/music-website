@@ -10,6 +10,7 @@ export const useLoginStore = defineStore({
     avatar: "",
     token: "",
     songLikes: [-1],
+    playlistLikes: [-1],
     isLogin: false
   }),
   actions: {
@@ -20,6 +21,8 @@ export const useLoginStore = defineStore({
         password: "",
         avatar: "",
         token: "",
+        songLikes: [-1],
+        playlistLikes: [-1],
         isLogin: false
       })
     },
@@ -29,6 +32,9 @@ export const useLoginStore = defineStore({
     setSongLikes(songLikes: number[]){
       this.songLikes = songLikes;
     },
+    setPlaylistLikes(playlistLikes : number[]){
+      this.playlistLikes = playlistLikes;
+    },
     addSongLike(songId: number){
       this.songLikes.push(songId)
     },
@@ -36,7 +42,17 @@ export const useLoginStore = defineStore({
       const index = this.songLikes.indexOf(songId)
       if (index >= 0)
         this.songLikes.splice(index,1)
+    },
+    addPlayListLike(playlistId: number){
+      this.playlistLikes.push(playlistId)
+    },
+    deletePlaylistLike(playlistId:number){
+      const index = this.playlistLikes.indexOf(playlistId)
+      if (index >= 0)
+        this.playlistLikes.splice(index,1)
     }
   },
-  persist: true,
+  persist: {
+    paths:["id", "username", "avatar", "token", "isLogin"]
+  },
 })

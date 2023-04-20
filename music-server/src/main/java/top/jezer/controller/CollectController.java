@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import top.jezer.common.ErrorResp;
 import top.jezer.common.SuccessResp;
+import top.jezer.controller.dto.CollectListDTO;
 import top.jezer.controller.dto.CollectSongDTO;
 import top.jezer.domain.Collect;
 import top.jezer.exception.SystemException;
@@ -82,6 +83,19 @@ public class CollectController {
             if (res != null)
                 return new SuccessResp("查询成功", res);
             else return new ErrorResp("未收藏歌曲");
+        }catch (Exception e){
+            throw new SystemException();
+        }
+    }
+
+    // 获得用户的收藏歌单
+    @GetMapping("/list/user/{id}")
+    public Object getCollectListByUserId(@PathVariable("id") Integer userId){
+        try {
+            List<CollectListDTO> res = collectService.getCollectListByUserId(userId);
+            if (res != null)
+                return new SuccessResp("查询成功", res);
+            else return new ErrorResp("未收藏歌单");
         }catch (Exception e){
             throw new SystemException();
         }

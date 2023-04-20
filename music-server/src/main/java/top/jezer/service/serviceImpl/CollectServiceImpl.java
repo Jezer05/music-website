@@ -4,9 +4,11 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import top.jezer.controller.dto.CollectListDTO;
 import top.jezer.controller.dto.CollectSongDTO;
 import top.jezer.domain.Collect;
 import top.jezer.domain.Song;
+import top.jezer.domain.SongList;
 import top.jezer.mapper.CollectMapper;
 import top.jezer.service.CollectService;
 
@@ -24,6 +26,16 @@ public class CollectServiceImpl implements CollectService {
                 .leftJoin(Song.class ,Song::getId,  Collect::getSongId)
                 .eq(Collect::getType, 0).eq(Collect::getUserId, userId);
         return collectMapper.selectJoinList(CollectSongDTO.class, wrapper);
+    }
+
+    @Override
+    public List<CollectListDTO> getCollectListByUserId(Integer userId) {
+        MPJLambdaWrapper<Collect> wrapper = new MPJLambdaWrapper<Collect>()
+                .selectAs(Collect::getId, "collectId")
+                .selectAll(SongList.class)
+                .leftJoin(SongList.class ,SongList::getId,  Collect::getSongListId)
+                .eq(Collect::getType, 1).eq(Collect::getUserId, userId);
+        return collectMapper.selectJoinList(CollectListDTO.class, wrapper);
     }
 
     @Override
