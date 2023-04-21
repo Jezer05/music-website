@@ -104,7 +104,10 @@ const keyword = ref("");
 //<editor-fold desc="右上角显示内容">
 const loginStore = useLoginStore()
 const {username,avatar,isLogin} = storeToRefs(loginStore)
-const logout = () => loginStore.logout()
+const logout = () => {
+  router.push({name: "home"})
+  loginStore.logout()
+}
 //</editor-fold>
 
 //<editor-fold desc="登录/注册">
