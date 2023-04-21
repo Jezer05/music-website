@@ -12,8 +12,8 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ListSongDTO {
+    private Integer listSongId;
     private Integer id;
-    private Integer songId;
     private Integer singerId;
     private String name;
     private String introduction;

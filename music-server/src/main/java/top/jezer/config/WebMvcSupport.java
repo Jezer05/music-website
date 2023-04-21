@@ -50,6 +50,8 @@ public class WebMvcSupport extends WebMvcConfigurationSupport {
         excludePath.add("/admins/login");  //登录
         excludePath.add("/consumers/login");  //登录
         excludePath.add("/consumers/register");  //注册
+        excludePath.add("/songs");  //查询全部歌曲
+        excludePath.add("/songLists");  //获得全部歌单
         ////静态资源
         excludePath.add("/img/**");
         excludePath.add("/song/**");

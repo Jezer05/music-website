@@ -24,9 +24,21 @@ public class CollectController {
         collect.setUserId(id);
         collect.setType(0);
         try {
-           boolean res = collectService.addCollectSong(collect);
+           boolean res = collectService.addCollect(collect);
            if (res) return new SuccessResp("歌曲收藏成功");
            else return new ErrorResp("歌曲收藏失败");
+        }catch (Exception e){
+            throw new SystemException();
+        }
+    }
+    @PostMapping("/list/{id}")
+    public Object addCollectList(@PathVariable Integer id, @RequestBody Collect collect){
+        collect.setUserId(id);
+        collect.setType(1);
+        try {
+            boolean res = collectService.addCollect(collect);
+            if (res) return new SuccessResp("歌曲收藏成功");
+            else return new ErrorResp("歌曲收藏失败");
         }catch (Exception e){
             throw new SystemException();
         }
@@ -64,6 +76,18 @@ public class CollectController {
             if (res)
                 return new SuccessResp("取消收藏成功");
             else return new ErrorResp("未找到对应内容");
+        }catch (Exception e){
+            throw new SystemException();
+        }
+    }
+
+    @DeleteMapping("/list/{id}")
+    public Object delCollectList(@PathVariable Integer id, @RequestParam Integer listId){
+        try {
+           boolean res = collectService.delCollectListByListId(id, listId);
+           if (res)
+               return new SuccessResp("取消收藏成功");
+           else return new ErrorResp("未找到对应内容");
         }catch (Exception e){
             throw new SystemException();
         }

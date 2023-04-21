@@ -19,9 +19,8 @@ public class ListSongServiceImpl implements ListSongService {
     @Override
     public List<ListSongDTO> getSongListByListId(Integer songListId) {
         MPJLambdaWrapper<ListSong> wrapper = new MPJLambdaWrapper<ListSong>()
-                .select(ListSong::getId)
-                .select(Song::getName, Song::getSingerId, Song::getIntroduction, Song::getLyric, Song::getPic, Song::getUrl)
-                .selectAs(Song::getId, "songId")
+                .selectAs(ListSong::getId, "listSongId")
+                .select(Song::getId,Song::getName, Song::getSingerId, Song::getIntroduction, Song::getLyric, Song::getPic, Song::getUrl)
                 .leftJoin(Song.class, Song::getId, ListSong::getSongId)
                 .eq(ListSong::getSongListId, songListId);
         return listSongMapper.selectJoinList(ListSongDTO.class, wrapper);

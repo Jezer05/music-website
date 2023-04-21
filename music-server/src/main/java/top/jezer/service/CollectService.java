@@ -17,8 +17,10 @@ public interface CollectService {
     boolean deleteCollect(Integer id);
     boolean deleteCollects(List<Integer> ids);
     // 收藏歌曲
-    boolean addCollectSong(Collect collect);
+    boolean addCollect(Collect collect);
     // 取消收藏歌曲
     boolean delCollectSongBySongId(Integer id, Integer songId);
+    // 取消收藏歌单
+    boolean delCollectListByListId(Integer id, Integer ListId);
 
 }

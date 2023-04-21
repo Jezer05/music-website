@@ -49,7 +49,7 @@ public class CollectServiceImpl implements CollectService {
     }
 
     @Override
-    public boolean addCollectSong(Collect collect) {
+    public boolean addCollect(Collect collect) {
         return collectMapper.insert(collect) > 0;
     }
 
@@ -58,5 +58,13 @@ public class CollectServiceImpl implements CollectService {
         LambdaQueryWrapper<Collect> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Collect::getType, 0).eq(Collect::getUserId, id).eq(Collect::getSongId, songId);
         return collectMapper.delete(wrapper) > 0;
+    }
+
+
+    @Override
+    public boolean delCollectListByListId(Integer id, Integer ListId) {
+        LambdaQueryWrapper<Collect> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Collect::getType, 1).eq(Collect::getSongListId, ListId).eq(Collect::getUserId, id);
+        return collectMapper.delete((wrapper)) >  0;
     }
 }
