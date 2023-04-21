@@ -66,6 +66,13 @@ public class SongListServiceImpl implements SongListService {
     }
 
     @Override
+    public List<SongList> getSongListByTitle(String title) {
+        LambdaQueryWrapper<SongList> wrapper = new LambdaQueryWrapper<>();
+        wrapper.like(SongList::getTitle, title);
+        return songListMapper.selectList(wrapper);
+    }
+
+    @Override
     public SongList getSongList(Integer id) {
         return songListMapper.selectById(id);
     }

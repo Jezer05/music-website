@@ -122,5 +122,13 @@ public class SongListController {
             throw new SystemException();
         }
     }
+    @GetMapping("/title")
+    public Object getSongListByTitle(String title){
+        try{
+            return new SuccessResp("歌曲查询成功", songListService.getSongListByTitle(title));
+        }catch (Exception e){
+            throw new SystemException("系统繁忙，请稍后再试");
+        }
+    }
     //</editor-fold>
 }
