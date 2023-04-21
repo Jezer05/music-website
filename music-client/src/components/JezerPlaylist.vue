@@ -12,7 +12,7 @@
                      style="width: 32px;height: 32px;position: absolute"
                      alt="" @click.stop = "delCollectList(item.id)">
             </div>
-            <a href="javascript:">{{item.title}}</a>
+            <a href="javascript:" :title="item.title">{{item.title}}</a>
         </div>
     </div>
     <el-pagination

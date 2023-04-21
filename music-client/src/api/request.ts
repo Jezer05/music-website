@@ -39,4 +39,10 @@ export const HttpManager = {
   // 取消收藏歌曲
   delCollectList: async (id:number, listId:number) =>
       axiosWithJson.delete(`/collects/list/${id}?listId=${listId}`),
+  // 根据名称查询音乐
+  getSongByName: async (name:string) =>
+      axiosWithJson.get(`/songs/name?name=${name}`),
+  // 根据名称查询歌单
+  getListByTitle: async (title:string) =>
+      axiosWithJson.get(`/songLists/title?title=${title}`)
 }

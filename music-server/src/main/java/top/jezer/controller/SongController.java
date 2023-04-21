@@ -175,6 +175,15 @@ public class SongController {
             throw new SystemException();
         }
     }
+    // 根据歌曲名模糊查找
+    @GetMapping("/name")
+    public Object getSongByName(String name){
+        try{
+            return new SuccessResp("歌曲查询成功", songService.getSongByName(name));
+        }catch (Exception e){
+            throw new SystemException("系统繁忙，请稍后再试");
+        }
+    }
     //</editor-fold>
 
     //<editor-fold desc="暂未使用">
@@ -188,17 +197,6 @@ public class SongController {
             else return new ErrorResp("未找到对应歌曲信息");
         }catch (Exception e){
             throw new SystemException();
-        }
-    }
-    // 根据歌手查询歌曲
-    @GetMapping("/singerName/detail")
-    public Object getSongByName(String name){
-        if (null == name)
-            return new ErrorResp("歌曲名称不能为空").getMessage();
-        try{
-            return new SuccessResp("歌曲查询成功", songService.getSongByName(name)).getMessage();
-        }catch (Exception e){
-            throw new SystemException("系统繁忙，请稍后再试");
         }
     }
     //</editor-fold>

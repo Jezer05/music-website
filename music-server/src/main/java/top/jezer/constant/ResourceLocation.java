@@ -12,4 +12,5 @@ public class ResourceLocation {
     public static String SONG_PIC_PATH = "file:" + PROJECT_PATH + "/img/songPic/";
     public static String SONG_PATH = "file:" + PROJECT_PATH + "/song/";
     public static String SINGER_PIC_PATH = "file:" + PROJECT_PATH + "/img/singerPic/";
+    public static String THEME_PIC_PATH = "file:" + PROJECT_PATH + "/img/theme/";
 }

@@ -18,8 +18,8 @@
                                 <img src="@/static/img/icons/红爱心.svg"
                                      style="width: 32px;height: 32px;position: absolute"
                                      alt="" @click.stop = "delCollectList(item.id)">
-                                <a href="javascript:">{{item.title}}</a>
                             </div>
+                            <a href="javascript:" :title="item.title">{{item.title}}</a>
                         </div>
                     </div>
                 </div>
@@ -60,6 +60,7 @@ const getData = async () => {
   musicRawData.value = songCollect.data;
   playlistRawData.value = listCollect.data;
   for (let item of playlistRawData.value)
+      // @ts-ignore
       listLikes.value.push(item.id);
   isLoading.value = false
 }

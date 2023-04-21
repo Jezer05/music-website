@@ -6,7 +6,7 @@ interface ThemeState {
 export const useThemeStore = defineStore({
   id: 'app-theme',
   state: ():ThemeState => ({
-    backgroundColor: '',
+    backgroundColor: '#dde2eb',
   }),
   actions: {
     setThemeColor(color:string){

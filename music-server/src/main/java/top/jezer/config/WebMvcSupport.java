@@ -51,7 +51,10 @@ public class WebMvcSupport extends WebMvcConfigurationSupport {
         excludePath.add("/consumers/login");  //登录
         excludePath.add("/consumers/register");  //注册
         excludePath.add("/songs");  //查询全部歌曲
-        excludePath.add("/songLists");  //获得全部歌单
+        excludePath.add("/songLists/**");  //获得全部歌单
+        excludePath.add("/comments/songList/detail/**");  //歌单评论
+        excludePath.add("/listSongs/**");  //歌单歌曲
+
         ////静态资源
         excludePath.add("/img/**");
         excludePath.add("/song/**");
@@ -75,5 +78,7 @@ public class WebMvcSupport extends WebMvcConfigurationSupport {
                 .addResourceLocations(ResourceLocation.SONG_PATH);
         registry.addResourceHandler("/img/singerPic/**")
                 .addResourceLocations(ResourceLocation.SINGER_PIC_PATH);
+        registry.addResourceHandler("/img/theme/**")
+                .addResourceLocations(ResourceLocation.THEME_PIC_PATH);
     }
 }

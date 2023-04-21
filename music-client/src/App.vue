@@ -4,7 +4,8 @@ import {useLoginStore} from "@/store/login";
 import {storeToRefs} from "pinia";
 import {HttpManager} from "@/api/request";
 import emitter from "@/utils/emitter";
-// TODO: 主题变换监听器
+import {useThemeStore} from "@/store/theme";
+
 
 //<editor-fold desc="收藏歌曲">
 const loginStore = useLoginStore();
@@ -19,7 +20,6 @@ const getCollect = async () =>{
   if(!songCollect.success || !listCollect.success) return;
   for (let item of songCollect.data)
     songLikes.push(item.id);
-  console.log(songLikes)
   for (let item of listCollect.data)
     playlistLikes.push(item.id);
   loginStore.setSongLikes(songLikes);
@@ -56,6 +56,18 @@ onBeforeUnmount(()=>{
   emitter.all.clear()
 })
 //</editor-fold>
+
+//<editor-fold desc="设置主题">
+const themeStore = useThemeStore()
+const {backgroundColor} = storeToRefs(themeStore)
+const setThemeColor = () => {
+  document.querySelector("body")!.setAttribute("style", `background-color:${backgroundColor.value};transition: 0.7s;`);
+}
+onMounted(()=>{
+  setThemeColor()
+})
+//</editor-fold>
+
 </script>
 
 <template>

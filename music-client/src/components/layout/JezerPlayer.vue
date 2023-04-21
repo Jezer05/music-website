@@ -34,7 +34,7 @@
             <!-- 音量条 -->
             <el-slider v-model="volume" @change="changeVolume" style="width: 100px; margin-right: 20px" :show-tooltip="true" />
             <!-- TODO: 播放列表设计-->
-            <a href="javascript:" @click="">
+            <a href="javascript:" @click="musicStore.toggleShowCurList()">
               <span class="notification-number">{{ curPlayList.length }}</span>
               <img src="@/static/img/icons/列表.svg" alt="" class="Musicice" />
             </a>

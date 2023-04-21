@@ -17,6 +17,7 @@ interface Music {
   playMode: number,
   // curTime: number,
   // changeTime: number;
+  showCurList: boolean,
   curPlayList: Array<MusicDetail>,
   curPlayIndex:number
 }
@@ -31,6 +32,7 @@ export const useMusicStore = defineStore({
     isPlay: false, // 播放状态
     playMode: 0, // 播放模式
     /** 音乐列表信息 */
+    showCurList: false,
     curPlayList: [], // 当前播放列表
     curPlayIndex: -1, // 当前歌曲在歌曲列表的位置
   }),
@@ -66,7 +68,10 @@ export const useMusicStore = defineStore({
       this.curPlayList = list;
       this.$patch({...list[index]});
       this.isPlay = true;
-    }
+    },
+    toggleShowCurList(){
+      this.showCurList =  !this.showCurList;
+}
   },
   persist: {
     paths: ["songId","songTitle","songUrl","songPic", "playMode", "curPlayList","curPlayIndex"]

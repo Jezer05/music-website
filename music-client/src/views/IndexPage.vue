@@ -10,13 +10,19 @@
         <JezerPlayer/>
       </div>
     </div>
-    <div class="overlay-app"></div>
+      <JezerCurrentPlay/>
   </div>
 </template>
 
 <script>
 
 
+import {defineComponent} from "vue";
+import JezerCurrentPlay from "@/components/JezerCurrentPlay.vue";
+
+export default defineComponent({
+  components: {JezerCurrentPlay}
+})
 </script>
 
 <style lang="scss">

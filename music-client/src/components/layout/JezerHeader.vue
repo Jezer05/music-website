@@ -21,7 +21,7 @@
       </div>
 
     <div class="search-bar">
-      <input type="text" placeholder="Search" @keyup.enter='toSearch' v-model='keyword'>
+      <input type="text" placeholder="Search" @keyup.enter='goSearchDetail' v-model='keyword'>
     </div>
 
     <div class="header-profile" v-if="isLogin">
@@ -92,8 +92,9 @@ const back = () => {
 const forward = () => {
   router.forward()
 }
-const toSearch = () => {
+const goSearchDetail = () => {
   router.push({ name: 'search', query: { keyword: keyword.value } })
+  keyword.value = "";
 }
 //</editor-fold>
 

@@ -30,3 +30,12 @@ export function parseTime(cellValue: any) {
   const day = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
   return year + "-" + month + "-" + day;
 }
+// 获取歌曲名
+export  function getSongTitle(str : string) {
+  return str.split("-")[1];
+}
+
+// 获取歌手名
+export  function getSingerName(str : string) {
+  return str.split("-")[0];
+}

@@ -19,7 +19,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/musicLibrary',
     name: 'musicLibrary',
-    component: () => import('@/views/MusicLibrary.vue'),
+    component: () => import('@/views/MusicPage.vue'),
   },
   {
     path: '/theme',
@@ -30,6 +30,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/like',
     name: 'like',
     component: () => import('@/views/LikePage.vue'),
+  },
+  {
+    path: '/search',
+    name: 'search',
+    component: () => import('@/views/SearchDetail.vue'),
   },
 ]
 
