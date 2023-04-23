@@ -184,9 +184,6 @@ public class SongController {
             throw new SystemException("系统繁忙，请稍后再试");
         }
     }
-    //</editor-fold>
-
-    //<editor-fold desc="暂未使用">
     // 返回指定歌曲ID的歌曲
     @GetMapping("/{id}")
     public Object getSongById(@PathVariable("id") Integer id){

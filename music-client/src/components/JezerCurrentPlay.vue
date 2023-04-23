@@ -36,7 +36,7 @@ const {curPlayList,showCurList,songId} = storeToRefs(musicStore)
     transition: all 0.3s ease;
 }
 
-.aside-fade-enter,
+.aside-fade-enter-from,
 .aside-fade-leave-to {
     transform: translateX(10px);
     opacity: 0;

@@ -7,10 +7,11 @@
         <div class="content-wrapper">
           <router-view  />
         </div>
-        <JezerPlayer/>
       </div>
     </div>
-      <JezerCurrentPlay/>
+    <JezerPlayer/>
+    <JezerCurrentPlay/>
+    <MusicDetail/>
   </div>
 </template>
 
@@ -19,9 +20,11 @@
 
 import {defineComponent} from "vue";
 import JezerCurrentPlay from "@/components/JezerCurrentPlay.vue";
+import JezerLyric from "@/views/MusicDetail.vue";
+import MusicDetail from "@/views/MusicDetail.vue";
 
 export default defineComponent({
-  components: {JezerCurrentPlay}
+  components: {MusicDetail, JezerLyric, JezerCurrentPlay}
 })
 </script>
 

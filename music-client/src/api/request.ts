@@ -44,5 +44,8 @@ export const HttpManager = {
       axiosWithJson.get(`/songs/name?name=${name}`),
   // 根据名称查询歌单
   getListByTitle: async (title:string) =>
-      axiosWithJson.get(`/songLists/title?title=${title}`)
+      axiosWithJson.get(`/songLists/title?title=${title}`),
+  // 根据歌曲id查询信息
+  getMusicById: async (id: number) =>
+      axiosWithJson.get(`/songs/${id}`),
 }

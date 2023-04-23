@@ -15,9 +15,10 @@ interface Music {
   isPlay: boolean,
   // duration: number,
   playMode: number,
-  // curTime: number,
+  curTime: number,
   // changeTime: number;
   showCurList: boolean,
+  showLyric: boolean,
   curPlayList: Array<MusicDetail>,
   curPlayIndex:number
 }
@@ -30,9 +31,11 @@ export const useMusicStore = defineStore({
     songUrl: "/song/张杰-仰望星空.mp3", // 音乐 URL
     songPic: "/img/songPic/haikuotiankong.jpg", // 歌曲图片
     isPlay: false, // 播放状态
+    curTime: 0,
     playMode: 0, // 播放模式
     /** 音乐列表信息 */
     showCurList: false,
+    showLyric: false,
     curPlayList: [], // 当前播放列表
     curPlayIndex: -1, // 当前歌曲在歌曲列表的位置
   }),
@@ -71,7 +74,10 @@ export const useMusicStore = defineStore({
     },
     toggleShowCurList(){
       this.showCurList =  !this.showCurList;
-}
+    },
+    toggleShowLyric(){
+      this.showLyric = !this.showLyric;
+    }
   },
   persist: {
     paths: ["songId","songTitle","songUrl","songPic", "playMode", "curPlayList","curPlayIndex"]

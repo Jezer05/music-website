@@ -27,6 +27,7 @@ declare module '@vue/runtime-core' {
     JezerHome: typeof import('./src/components/layout/JezerHome.vue')['default']
     JezerIndex: typeof import('@/views/IndexPage.vue')['default']
     JezerLogin: typeof import('./src/components/JezerLogin.vue')['default']
+    JezerLyric: typeof import('@/views/MusicDetail.vue')['default']
     JezerMusic: typeof import('./src/components/JezerMusic.vue')['default']
     JezerPlayer: typeof import('./src/components/layout/JezerPlayer.vue')['default']
     JezerPlaylist: typeof import('./src/components/JezerPlaylist.vue')['default']

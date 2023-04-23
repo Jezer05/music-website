@@ -3,7 +3,10 @@
       <audio :src="attachUrl(<string>songUrl)" ref="audio" @timeupdate="timeupdate"
         @canplay="canPlay" @ended="ended" style="display: none"></audio>
       <div class="m-tandc">
-        <img :src="attachUrl(<string>songPic)" alt="">
+        <img :src="attachUrl(<string>songPic)" alt=""/>
+        <img src="@/static/img/icons/展开.svg" alt=""
+             @click="musicStore.toggleShowLyric()"
+             style="position: absolute;width: 25px;margin-left: 65px"/>
         <div class="titleandsinger">
           <a href="javascript:" style=" color: #000;">{{ songTitle }}</a>
         </div>
@@ -44,7 +47,7 @@
 <!--         进度条-->
         <div class="m-slider">
           <span type="info" style="margin-left: 18px;">{{ startTime }}</span>
-          <div class="slider-demo-block">
+          <div class="slider-demo-block" @mousedown="isDragging=true" @mouseup="isDragging=false">
             <el-slider v-model="progress" :show-tooltip="false" @change="changeTime" style="width: 400px" />
           </div>
           <span type="info" style="margin-left: 18px;">{{ endTime }}</span>
@@ -60,11 +63,10 @@ import {storeToRefs} from "pinia";
 
 const musicStore = useMusicStore();
 const audio = ref<HTMLAudioElement>()
-const {songUrl, isPlay, playMode, curPlayIndex, curPlayList,songPic, songTitle} = storeToRefs(musicStore);
+const {songUrl, isPlay, playMode, curPlayIndex, curPlayList,songPic, songTitle,curTime} = storeToRefs(musicStore);
 
 //<editor-fold desc="原生音乐播放器">
 const duration = ref(0)
-const curTime = ref(0)
 watch(isPlay, () =>{
   isPlay.value ? audio.value?.play() : audio.value?.pause();
 })
@@ -74,7 +76,8 @@ const canPlay = () =>{
     audio.value?.play()
 }
 const timeupdate = () => {
-  curTime.value = audio.value!.currentTime
+  if(!isDragging.value)
+    curTime.value = audio.value!.currentTime
 }
 const ended = () => {
   musicStore.pause();
@@ -104,9 +107,16 @@ onMounted(() => {
 const startTime = ref("00:00")
 const endTime = ref("00:00")
 const progress = ref(0);
+// 标记是否正在被拖拽，用来解决下面bug
+// 出现这种问题的原因是audio的timeupdate方法约每秒触发一次，
+// js代码在播放音频时没有进行处理，此方法一直在修改slider的model值，
+// 当把滑块拖到目标位置（过程超过1s）松开时，
+// slider拖动的实际值已经被timeupdate修改成了currentTime，所以松手后滑块会立刻回到currentTime值的位置。
+const isDragging = ref(false)
 watch(curTime, () => {
   startTime.value = formatSeconds(curTime.value);
   endTime.value = formatSeconds(duration.value);
+  progress.value = curTime.value/duration.value * 100
 })
 const changeTime = () => {
   // 不需要给curTime赋值，已经配置了监听
@@ -132,11 +142,11 @@ const nextMusic = (flag: number) => {
     return
   }
   if(playMode.value === 0)
-    curPlayIndex.value = (curPlayIndex.value + 1) % length;
+    curPlayIndex.value = (curPlayIndex.value + 1 + length) % length;
   if(playMode.value === 1)
     curPlayIndex.value = Math.floor(Math.random() * length);
   if(flag === 1 && playMode.value === 3)
-    curPlayIndex.value = (curPlayIndex.value + 1) % length;
+    curPlayIndex.value = (curPlayIndex.value + 1 + length) % length;
   setCurrentMusic();
 }
 const previousMusic = () => {
@@ -152,7 +162,7 @@ const previousMusic = () => {
       return
     }
     if(playMode.value === 0 || playMode.value === 0 )
-      curPlayIndex.value = (curPlayIndex.value - 1) % length;
+      curPlayIndex.value = (curPlayIndex.value - 1 + length) % length;
     if(playMode.value === 1)
       curPlayIndex.value = Math.floor(Math.random() * length);
     setCurrentMusic();
@@ -165,6 +175,8 @@ const togglePlay = () => {
   musicStore.togglePlay();
 }
 //</editor-fold>
+
+
 
 </script>
 
@@ -198,4 +210,5 @@ const togglePlay = () => {
 .el-slider__button-wrapper {
   display: none;
 }
+
 </style>
