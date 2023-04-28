@@ -43,7 +43,10 @@ const submitForm = async () =>{
   }
   const result = (await HttpManager.login(loginForm));
   if (result.data != null){
-      adminStore.login(result.data);
+    const {id,username,password,token} = result.data
+    adminStore.login({
+      id,username,password,token
+    });
   }
   ElMessage({
       message: result.message,

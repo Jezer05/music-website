@@ -65,29 +65,29 @@ export class RequestHttp {
          * 响应拦截器
         * 服务器换返回信息 -> [拦截统一处理] -> 客户端JS获取到信息
         */
-        this.service.interceptors.response.use(
-          (response: AxiosResponse) => {
-          const {data} = response; // 解构
-          if (data.code === RequestEnums.EXPIRED) {
-            // 登录信息失效，应跳转到登录页面，并清空pinia和localStorage的数据
-            useLoginStore().logout();
-            ElMessage.error("身份过期，请重新登录")
-            return Promise.reject(data);
-          }
-          return data;
-        },
-          (error: AxiosError) => {
-            const {response} = error;
-            if (response) {
-              this.handleCode(response.status)
-            }
-            if (!window.navigator.onLine) {
-              ElMessage.error('网络连接失败');
-              // 可以跳转到错误页面，也可以不做操作
-            }
-            return Promise.reject(response);
+      this.service.interceptors.response.use(
+        (response: AxiosResponse) => {
+        const {data} = response; // 解构
+        if (data.code === RequestEnums.EXPIRED) {
+          // 登录信息失效，应跳转到登录页面，并清空pinia和localStorage的数据
+          useLoginStore().logout();
+          ElMessage.error("身份过期，请重新登录")
+          return Promise.reject(data);
         }
-        )
+        return data;
+      },
+        (error: AxiosError) => {
+          const {response} = error;
+          if (response) {
+            this.handleCode(response.status)
+          }
+          if (!window.navigator.onLine) {
+            ElMessage.error('网络连接失败');
+            // 可以跳转到错误页面，也可以不做操作
+          }
+          return Promise.reject(response);
+      }
+      )
     }
     handleCode(code: number):void {
       switch(code) {

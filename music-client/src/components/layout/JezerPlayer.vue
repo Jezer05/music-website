@@ -6,7 +6,7 @@
         <img :src="attachUrl(<string>songPic)" alt=""/>
         <img src="@/static/img/icons/展开.svg" alt=""
              @click="musicStore.toggleShowLyric()"
-             style="position: absolute;width: 25px;margin-left: 65px"/>
+             style="position: absolute;width: 25px;margin-left: 65px;background: #d5ebe1;opacity: 0.4"/>
         <div class="titleandsinger">
           <a href="javascript:" style=" color: #000;">{{ songTitle }}</a>
         </div>

@@ -15,17 +15,10 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
 
-
-import {defineComponent} from "vue";
-import JezerCurrentPlay from "@/components/JezerCurrentPlay.vue";
-import JezerLyric from "@/views/MusicDetail.vue";
 import MusicDetail from "@/views/MusicDetail.vue";
 
-export default defineComponent({
-  components: {MusicDetail, JezerLyric, JezerCurrentPlay}
-})
 </script>
 
 <style lang="scss">

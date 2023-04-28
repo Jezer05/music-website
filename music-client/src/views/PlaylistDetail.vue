@@ -9,7 +9,7 @@
               <div class="playlist-title" v-if="!isLoading">
                   <h2>{{ playlistDetail.title }}</h2>
                   <el-button color="#729bed" round class="m-lib-btn" @click="setPlaylist">立即播放</el-button>
-                  <el-button color="#72d9ed" round class="m-lib-btn" @click="addComment">评论</el-button>
+<!--                  <el-button color="#72d9ed" round class="m-lib-btn" @click="addComment">评论</el-button>-->
               </div>
               <div class="tags" v-if="!isLoading">
                   <ul>
