@@ -239,7 +239,7 @@ const showSelect = async () => {
     selectedList.value = [];
     for (let item of tableData.value){
         // @ts-ignore
-        existedSongIds.value.push(item.songId)
+        existedSongIds.value.push(item.id)
     }
     const res = await HttpManager.getAllSong();
     for (let item of res.data){
